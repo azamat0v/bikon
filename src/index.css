@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Caveat:wght@400;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Outfit", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Space Grotesk", ui-monospace, SFMono-Regular, monospace;
+  --font-script: "Caveat", cursive;
+
+  --animate-gradient: gradient 8s linear infinite;
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes gradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: auto; /* Lenis handles smooth scrolling */
+  }
+
+  body {
+    @apply font-sans bg-[#FBFBFD] text-[#1D1D1F] antialiased selection:bg-black selection:text-white;
+  }
+
+  /* Typography system */
+  h1, h2, h3, h4, h5, h6 {
+    @apply tracking-[-0.04em] leading-[1.12] font-bold;
+  }
+
+  p {
+    @apply leading-[1.65] text-[#6E6E73] font-normal;
+  }
+
+  a {
+    @apply transition-colors duration-200;
+  }
+}
+
+@layer utilities {
+
+  /* ── Navigation ─────────────────────────────────── */
+  .glass-nav {
+    @apply bg-[#FBFBFD]/80 backdrop-blur-xl border-b border-black/[0.04] transition-all duration-300 ease-out;
+  }
+
+  .glass-nav-scrolled {
+    @apply bg-white/90 shadow-[0_1px_0_0_rgba(0,0,0,0.06),0_4px_24px_rgba(0,0,0,0.04)] border-b border-black/[0.06];
+  }
+
+  /* ── Buttons ─────────────────────────────────────── */
+  .apple-button-primary {
+    @apply inline-flex items-center justify-center
+           bg-[#111111] text-white
+           px-8 py-3.5 rounded-2xl
+           text-[14px] font-semibold tracking-[-0.01em]
+           transition-all duration-200 ease-out
+           hover:bg-black hover:scale-[1.02] hover:shadow-[0_8px_32px_-8px_rgba(0,0,0,0.35)]
+           active:scale-[0.97]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/20;
+  }
+
+  .apple-button-secondary {
+    @apply inline-flex items-center justify-center
+           bg-white border border-black/[0.08] text-[#1D1D1F]
+           px-8 py-3.5 rounded-2xl
+           text-[14px] font-semibold tracking-[-0.01em]
+           transition-all duration-200 ease-out
+           hover:bg-gray-50 hover:border-black/[0.12] hover:scale-[1.02] hover:shadow-[0_4px_20px_-6px_rgba(0,0,0,0.12)]
+           active:scale-[0.97]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black/10;
+  }
+
+  /* ── Gradient Brand Text ─────────────────────────── */
+  .bikon-gradient {
+    @apply bg-clip-text text-transparent
+           bg-gradient-to-br from-[#1D1D1F] via-[#0066CC] to-[#1D1D1F]
+           bg-[length:200%_auto] animate-gradient;
+  }
+
+  /* ── Shadows ─────────────────────────────────────── */
+  .organic-shadow {
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.04),
+      0 4px 16px rgba(0,0,0,0.04),
+      0 16px 48px -12px rgba(0,0,0,0.08);
+  }
+
+  .card-shadow {
+    box-shadow:
+      0 1px 3px rgba(0,0,0,0.04),
+      0 8px 32px -8px rgba(0,0,0,0.08);
+  }
+
+  .card-shadow-hover {
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 20px 60px -12px rgba(0,0,0,0.14);
+  }
+
+  /* ── Labels / Tags ───────────────────────────────── */
+  .accent-label {
+    @apply inline-flex items-center
+           font-mono text-[10px] uppercase tracking-[0.28em] font-semibold
+           text-[#0066CC] bg-[#EBF5FF] 
+           px-3 py-1.5 rounded-full
+           border border-[#0066CC]/10;
+  }
+
+  /* ── Section dividers ────────────────────────────── */
+  .section-divider {
+    @apply border-t border-black/[0.05];
+  }
+
+  /* ── Floating animation ──────────────────────────── */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+}
+
+/* ── Lenis ───────────────────────────────────────── */
+html.lenis, html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-scrolling iframe {
+  pointer-events: none;
+}

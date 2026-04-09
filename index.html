@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bikon.uz - Premium Technology</title>
+    <script>
+      // Fix for "Cannot set property fetch of #<Window> which has only a getter"
+      // This can happen if a polyfill or library tries to overwrite window.fetch in a restricted environment.
+      try {
+        if (typeof window.fetch === 'function') {
+          const originalFetch = window.fetch;
+          Object.defineProperty(window, 'fetch', {
+            get: () => originalFetch,
+            set: () => { console.warn('Attempted to overwrite window.fetch, but it is read-only.'); },
+            configurable: true
+          });
+        }
+      } catch (e) {
+        console.warn('Could not redefine window.fetch, but continuing anyway.');
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+
