@@ -2,23 +2,32 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X, Phone } from 'lucide-react';
 import { useLenis } from '../context/LenisContext';
+import { useLang } from '../context/LanguageContext';
+import type { Lang } from '../i18n/translations';
 
 const NAV_HEIGHT = 72;
 
-const navLinks = [
-  { name: 'Home',      id: 'home'       },
-  { name: 'Laptops',   id: 'noutbuklar' },
-  { name: 'Cases',     id: 'pc'         },
-  { name: 'Monitors',  id: 'monitorlar' },
+const LANG_OPTIONS: { code: Lang; label: string }[] = [
+  { code: 'en', label: 'EN' },
+  { code: 'ru', label: 'RU' },
+  { code: 'uz', label: 'UZ' },
 ];
 
 export default function Navbar() {
-  const [isScrolled, setIsScrolled]     = useState(false);
-  const [isMenuOpen, setIsMenuOpen]     = useState(false);
+  const { lang, setLang, tr } = useLang();
+  const [isScrolled, setIsScrolled]       = useState(false);
+  const [isMenuOpen, setIsMenuOpen]       = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const hamburgerRef  = useRef<HTMLButtonElement>(null);
   const lenis = useLenis();
+
+  const navLinks = [
+    { name: tr.nav.home,     id: 'home'       },
+    { name: tr.nav.laptops,  id: 'noutbuklar' },
+    { name: tr.nav.cases,    id: 'pc'         },
+    { name: tr.nav.monitors, id: 'monitorlar' },
+  ];
 
   // ── Scroll-spy ────────────────────────────────────────────────────────────
   useEffect(() => {
@@ -178,6 +187,39 @@ export default function Navbar() {
 
             {/* Right — Contact + hamburger */}
             <div className="flex items-center gap-4">
+              {/* Language switcher */}
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  background: 'rgba(0,0,0,0.05)',
+                  borderRadius: 10,
+                  padding: '3px',
+                }}
+              >
+                {LANG_OPTIONS.map(({ code, label }) => (
+                  <button
+                    key={code}
+                    onClick={() => setLang(code)}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 700,
+                      letterSpacing: '0.06em',
+                      padding: '5px 9px',
+                      borderRadius: 7,
+                      border: 'none',
+                      cursor: 'pointer',
+                      background: lang === code ? '#111' : 'transparent',
+                      color: lang === code ? '#fff' : '#888',
+                      transition: 'all 0.2s ease',
+                    }}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+
               <a
                 href="tel:+998783338085"
                 className="hidden sm:flex items-center gap-2 text-white text-[12px] font-bold uppercase tracking-[0.12em] no-underline transition-all duration-200 active:scale-95"
@@ -191,7 +233,7 @@ export default function Navbar() {
                 onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#111'; (e.currentTarget as HTMLElement).style.boxShadow = '0 4px 16px rgba(0,0,0,0.18)'; }}
               >
                 <Phone size={13} strokeWidth={2.5} />
-                Contact
+                {tr.nav.contact}
               </a>
 
               <button

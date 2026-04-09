@@ -10,6 +10,7 @@ import Footer from './components/Footer';
 import PageLoader from './components/PageLoader';
 import CatalogSection from './components/CatalogSection';
 import { LenisContext } from './context/LenisContext';
+import { LanguageProvider } from './context/LanguageContext';
 import {
   Monitor,
   Cpu,
@@ -111,7 +112,8 @@ export default function App() {
   }, []);
 
   return (
-    <LenisContext.Provider value={lenis}>
+    <LanguageProvider>
+      <LenisContext.Provider value={lenis}>
       {/* Intro preloader — sits above everything, self-removes after reveal */}
       <PageLoader onDone={() => setLoaderDone(true)} />
 
@@ -141,5 +143,6 @@ export default function App() {
         <Footer />
       </div>
     </LenisContext.Provider>
+    </LanguageProvider>
   );
 }

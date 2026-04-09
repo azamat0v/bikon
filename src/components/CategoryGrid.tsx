@@ -1,38 +1,17 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
+import { useLang } from '../context/LanguageContext';
 
 /* ── Config ──────────────────────────────────────────────────────────────── */
-const categories = [
-  {
-    id: 'noutbuklar',
-    series: 'SMARTBOOK SERIES',
-    title: 'Laptops',
-    image: '/categories/laptop_category.jpg',
-    light: true,
-  },
-  {
-    id: 'monobloklar',
-    series: 'MATRIX SERIES',
-    title: 'All-in-Ones',
-    image: '/categories/monoblock_category.jpg',
-    light: true,
-  },
-  {
-    id: 'monitorlar',
-    series: 'VISION PRO SERIES',
-    title: 'Monitors',
-    image: '/categories/monitor_category.jpg',
-    light: true,
-  },
-  {
-    id: 'pc',
-    series: 'PHANTOM SERIES',
-    title: 'Cases & PCs',
-    image: '/categories/case_category.jpg',
-    light: false,
-  },
+/* ── Static assets — text injected from translations at render time ────────── */
+const CATEGORY_ASSETS = [
+  { id: 'noutbuklar',  image: '/categories/laptop_category.jpg',    light: true  },
+  { id: 'monobloklar', image: '/categories/monoblock_category.jpg', light: true  },
+  { id: 'monitorlar', image: '/categories/monitor_category.jpg',   light: true  },
+  { id: 'pc',         image: '/categories/case_category.jpg',      light: false },
 ];
+
 
 /* ── Detect pointer device (hover: hover) ────────────────────────────────── */
 function useHasHover() {
@@ -45,16 +24,25 @@ function useHasHover() {
 
 /* ── Card ────────────────────────────────────────────────────────────────── */
 function CategoryCard({
-  cat,
+  asset,
   index,
   canHover,
+  series,
+  title,
+  learnMore,
 }: {
-  cat: (typeof categories)[0];
-  index: number;
-  canHover: boolean;
+  key?:      string | number;
+  asset:     (typeof CATEGORY_ASSETS)[0];
+  index:     number;
+  canHover:  boolean;
+  series:    string;
+  title:     string;
+  learnMore: string;
 }) {
   const [hovered, setHovered] = useState(false);
-  const active = canHover && hovered; // scale only on real pointer devices
+  const active = canHover && hovered;
+
+  const cat = { ...asset, series, title }; // scale only on real pointer devices
 
   const scrollTo = () => {
     const el = document.getElementById(cat.id);
@@ -176,6 +164,7 @@ function CategoryCard({
           }}
         >
           Learn more
+          {/* arrow slides */}
           <motion.span
             animate={{ x: active ? 4 : 0 }}
             transition={{ type: 'spring', stiffness: 360, damping: 22 }}
@@ -206,6 +195,8 @@ function CategoryCard({
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function CategoryGrid() {
   const canHover = useHasHover();
+  const { tr } = useLang();
+  const cats = tr.categories.items;
 
   return (
     <section
@@ -262,7 +253,7 @@ export default function CategoryGrid() {
                 display: 'inline-block', flexShrink: 0,
               }}
             />
-            Products
+            {tr.categories.eyebrow}
           </span>
 
           <h2
@@ -276,15 +267,23 @@ export default function CategoryGrid() {
               fontFamily: '"Inter", var(--font-sans), sans-serif',
             }}
           >
-            <span style={{ fontWeight: 300, color: '#9CA3AF' }}>Explore </span>
-            Categories
+            <span style={{ fontWeight: 300, color: '#9CA3AF' }}>{tr.categories.title_light}</span>
+            {tr.categories.title_bold}
           </h2>
         </motion.div>
 
         {/* ── Grid: 1-col mobile, 2-col tablet+, gap-4 / gap-6 ────── */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {categories.map((cat, i) => (
-            <CategoryCard key={cat.id} cat={cat} index={i} canHover={canHover} />
+          {CATEGORY_ASSETS.map((asset, i) => (
+            <CategoryCard
+              key={asset.id}
+              asset={asset}
+              index={i}
+              canHover={canHover}
+              series={cats[i].series}
+              title={cats[i].title}
+              learnMore={tr.categories.learn_more}
+            />
           ))}
         </div>
 
@@ -297,7 +296,7 @@ export default function CategoryGrid() {
           className="text-center mt-10"
           style={{ fontSize: 12, color: '#BCBCBC', fontWeight: 500, letterSpacing: '0.02em' }}
         >
-          All products locally assembled in Uzbekistan · 12 Months Official Warranty
+          {tr.categories.footer_note}
         </motion.p>
       </div>
     </section>

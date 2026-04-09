@@ -1,9 +1,12 @@
 import { motion, useMotionValue, useSpring, useTransform, animate } from 'motion/react';
 import { useEffect, useRef } from 'react';
 import { ArrowRight, Star } from 'lucide-react';
+import { useLang } from '../context/LanguageContext';
 
 export default function CTASection() {
   const imgRef = useRef<HTMLImageElement>(null);
+  const { tr } = useLang();
+  const c = tr.cta;
 
   /* ── Continuous float animation on the product image ──────────────────── */
   useEffect(() => {
@@ -102,7 +105,7 @@ export default function CTASection() {
                 }}
               >
                 <Star size={10} strokeWidth={2.5} fill="currentColor" style={{ color: '#FACC15' }} />
-                Top Rated
+                {c.badge}
               </motion.span>
 
               {/* Headline */}
@@ -121,9 +124,9 @@ export default function CTASection() {
                   marginBottom: 22,
                 }}
               >
-                Discover our<br />
+                {c.title1}<br />
                 <span style={{ color: 'rgba(255,255,255,0.22)', fontWeight: 500, fontStyle: 'italic' }}>
-                  Bestsellers.
+                  {c.title2}
                 </span>
               </motion.h2>
 
@@ -142,8 +145,7 @@ export default function CTASection() {
                   fontFamily: '"Inter", sans-serif',
                 }}
               >
-                Join thousands of users who have upgraded to Bikon.
-                Professional power, engineered for Uzbekistan.
+                {c.body}
               </motion.p>
 
               {/* CTA */}
@@ -176,7 +178,7 @@ export default function CTASection() {
                     boxShadow: '0 0 0 1px rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.4)',
                   }}
                 >
-                  Shop Now
+                  {c.shop_now}
                   <ArrowRight size={15} strokeWidth={2.5} />
                 </motion.a>
 
@@ -194,7 +196,7 @@ export default function CTASection() {
                   onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
                   onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.40)')}
                 >
-                  View all →
+                  {c.view_all}
                 </a>
               </motion.div>
             </motion.div>

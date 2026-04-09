@@ -1,38 +1,24 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Settings2, BarChart3, ShieldCheck, Truck } from 'lucide-react';
+import { Settings2, BarChart3, ShieldCheck, Truck, type LucideIcon } from 'lucide-react';
+import { useLang } from '../context/LanguageContext';
 
-/* ── Card data ───────────────────────────────────────────────────────────── */
-const items = [
-  {
-    icon: Settings2,
-    title: 'Local Assembly & Support',
-    desc: 'Premium hardware assembled and serviced locally in Uzbekistan for maximum reliability.',
-  },
-  {
-    icon: BarChart3,
-    title: 'Optimal Performance Value',
-    desc: 'The perfect balance of world-class specifications and competitive market pricing.',
-  },
-  {
-    icon: ShieldCheck,
-    title: '12-Month Official Warranty',
-    desc: 'Full peace of mind with dedicated official service centers across the Republic.',
-  },
-  {
-    icon: Truck,
-    title: 'Streamlined Logistics',
-    desc: 'Stable supply chains ensuring fast and reliable delivery to your door.',
-  },
-];
+/* ── Icons only — text comes from tr.trust.features at render time ────────── */
+const ICONS = [Settings2, BarChart3, ShieldCheck, Truck];
+
 
 /* ── Single card ─────────────────────────────────────────────────────────── */
 function AdvantageCard({
-  item,
+  icon: Icon,
+  title,
+  desc,
   index,
 }: {
-  item: (typeof items)[0];
-  index: number;
+  key?:   string | number;
+  icon:   LucideIcon;
+  title:  string;
+  desc:   string;
+  index:  number;
 }) {
   const [hovered, setHovered] = useState(false);
 
@@ -121,7 +107,7 @@ function AdvantageCard({
             transition: 'background 0.3s ease',
           }}
         >
-          <item.icon
+          <Icon
             size={22}
             strokeWidth={1.8}
             style={{
@@ -143,7 +129,7 @@ function AdvantageCard({
           marginBottom: 10,
         }}
       >
-        {item.title}
+        {title}
       </h3>
       <p
         style={{
@@ -154,7 +140,7 @@ function AdvantageCard({
           letterSpacing: '-0.005em',
         }}
       >
-        {item.desc}
+        {desc}
       </p>
     </motion.article>
   );
@@ -162,6 +148,8 @@ function AdvantageCard({
 
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function TrustSection() {
+  const { tr } = useLang();
+  const feats = tr.trust.features;
   return (
     <section
       style={{ background: '#FFFFFF', paddingTop: 96, paddingBottom: 112 }}
@@ -219,7 +207,7 @@ export default function TrustSection() {
                   display: 'inline-block',
                 }}
               />
-              Our Advantages
+              {tr.trust.eyebrow}
             </span>
           </motion.div>
 
@@ -237,8 +225,8 @@ export default function TrustSection() {
               fontFamily: '"Inter", var(--font-sans), sans-serif',
             }}
           >
-            <span style={{ fontWeight: 300, color: '#9CA3AF' }}>Why </span>
-            <span style={{ fontWeight: 800, color: '#111827' }}>Bikon?</span>
+            <span style={{ fontWeight: 300, color: '#9CA3AF' }}>{tr.trust.title_light}</span>
+            <span style={{ fontWeight: 800, color: '#111827' }}>{tr.trust.title_bold}</span>
           </motion.h2>
 
           {/* Subtext */}
@@ -256,17 +244,20 @@ export default function TrustSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            Quality and trust are our highest priority.{' '}
-            <span style={{ color: '#374151', fontWeight: 500 }}>
-              Every device is backed by hard work and constant innovation.
-            </span>
+            {tr.trust.subtitle}
           </motion.p>
         </div>
 
         {/* ── 4-column card grid ───────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {items.map((item, i) => (
-            <AdvantageCard key={i} item={item} index={i} />
+          {ICONS.map((Icon, i) => (
+            <AdvantageCard
+              key={i}
+              icon={Icon}
+              title={feats[i].title}
+              desc={feats[i].desc}
+              index={i}
+            />
           ))}
         </div>
       </div>

@@ -1,6 +1,8 @@
 import { Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
+import { useLang } from '../context/LanguageContext';
 
 export default function Footer() {
+  const { tr } = useLang();
   return (
     <footer className="bg-[#F5F5F7] text-[#6E6E73] text-[13px] font-normal overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-8 py-16">
@@ -14,7 +16,7 @@ export default function Footer() {
               Bikon<span className="text-[#0066CC]">.</span>
             </a>
             <p className="text-[15px] text-[#6E6E73] leading-[1.65] max-w-[260px]">
-              Premium technology, proudly engineered in Uzbekistan. Building the future together.
+              {tr.footer.tagline}
             </p>
             <div className="flex gap-5">
               {[Instagram, Twitter, Facebook, Youtube].map((Icon, i) => (
@@ -34,32 +36,18 @@ export default function Footer() {
 
           {/* Link columns */}
           <div className="lg:col-span-8 grid grid-cols-2 md:grid-cols-3 gap-10">
-            {[
-              {
-                heading: 'Products',
-                links: ['Laptops', 'All-in-Ones', 'Desktop PC', 'Monitors'],
-                hrefs: ['#noutbuklar', '#monobloklar', '#pc', '#monitorlar'],
-              },
-              {
-                heading: 'About Bikon',
-                links: ['Company', 'Careers', 'News', 'Contact'],
-                hrefs: ['#', '#', '#', '#'],
-              },
-              {
-                heading: 'Support',
-                links: ['How to Buy', 'Shipping', 'Warranty', 'Service Centers'],
-                hrefs: ['#', '#', '#', '#'],
-              },
-            ].map((col) => (
-              <div key={col.heading} className="space-y-4">
+            {tr.footer.cols.map((col, ci) => (
+              <div key={ci} className="space-y-4">
                 <h4 className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#1D1D1F]">
                   {col.heading}
                 </h4>
                 <ul className="space-y-3">
                   {col.links.map((label, i) => (
-                    <li key={label}>
+                    <li key={i}>
                       <a
-                        href={col.hrefs[i]}
+                        href={ci === 0
+                          ? ['#noutbuklar','#monobloklar','#pc','#monitorlar'][i] ?? '#'
+                          : '#'}
                         className="text-[13px] text-[#6E6E73] hover:text-[#1D1D1F] transition-colors duration-150"
                       >
                         {label}
@@ -75,10 +63,10 @@ export default function Footer() {
         {/* Bottom row */}
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-5">
           <p className="text-[12px] text-[#8E8E93] tracking-[-0.01em]">
-            © 2026 Bikon.uz. Handcrafted in UZ.
+            {tr.footer.copyright}
           </p>
           <div className="flex gap-8">
-            {['Privacy', 'Terms', 'Sitemap'].map((label) => (
+            {tr.footer.legal.map((label) => (
               <a
                 key={label}
                 href="#"

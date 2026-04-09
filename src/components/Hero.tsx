@@ -1,15 +1,18 @@
-import { useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
   motion,
   useMotionValue,
   useSpring,
 } from 'motion/react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
+import { useLang } from '../context/LanguageContext';
 
 
 
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
 export default function Hero() {
+  const { tr } = useLang();
+  const h = tr.hero;
   const imageRef = useRef<HTMLDivElement>(null);
 
   // Mouse-driven 3-D tilt tracked as raw motion values
@@ -93,7 +96,7 @@ export default function Hero() {
               }}
             >
               <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'linear-gradient(135deg,#a78bfa,#60a5fa)', display: 'inline-block', flexShrink: 0 }} />
-              Premium Technology
+              {h.eyebrow}
             </span>
           </motion.div>
 
@@ -108,10 +111,10 @@ export default function Hero() {
               fontFamily: '"Inter", "SF Pro Display", var(--font-sans), sans-serif',
             }}
           >
-            Bikon.{' '}
+            {h.title1}{' '}
             <br className="hidden lg:block" />
             <span style={{ fontWeight: 300, color: '#555', letterSpacing: '-0.02em' }}>
-              Engineered for
+              {h.title2}
             </span>
             <br />
             <span
@@ -123,7 +126,7 @@ export default function Hero() {
                 fontWeight: 900,
               }}
             >
-              the Future.
+              {h.title3}
             </span>
           </motion.h1>
 
@@ -140,8 +143,7 @@ export default function Hero() {
               fontWeight: 400,
             }}
           >
-            Premium devices crafted to world standards—engineered for performance,{' '}
-            <span style={{ color: '#1D1D1F', fontWeight: 500 }}>designed to inspire.</span>
+            {h.subtitle}
           </motion.p>
 
           {/* CTA buttons */}
@@ -171,7 +173,7 @@ export default function Hero() {
                 boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
               }}
             >
-              Learn More
+              {h.cta_primary}
               <ArrowRight size={15} strokeWidth={2.5} />
             </motion.button>
 
@@ -196,7 +198,7 @@ export default function Hero() {
                 outline: 'none',
               }}
             >
-              View All Products
+              {h.cta_secondary}
               <ArrowRight size={15} strokeWidth={2.5} style={{ opacity: 0.6 }} />
             </motion.button>
           </motion.div>
@@ -208,11 +210,11 @@ export default function Hero() {
             transition={{ delay: 0.7, duration: 0.5 }}
             className="hidden lg:flex items-center gap-6 mt-12 text-[11px] font-semibold text-[#AAAAAA] uppercase tracking-[0.12em]"
           >
-            <span>12 Months Warranty</span>
+            <span>{h.badge1}</span>
             <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#DDD', display: 'inline-block' }} />
-            <span>Free Shipping</span>
+            <span>{h.badge2}</span>
             <span style={{ width: 3, height: 3, borderRadius: '50%', background: '#DDD', display: 'inline-block' }} />
-            <span>Uzbekistan's #1</span>
+            <span>{h.badge3}</span>
           </motion.div>
         </div>
 

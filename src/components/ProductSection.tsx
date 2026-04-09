@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
 import { ChevronRight, LucideIcon } from 'lucide-react';
+import { useLang } from '../context/LanguageContext';
 
 export interface ProductFeature {
   icon: LucideIcon;
@@ -17,6 +18,8 @@ export interface ProductProps {
 }
 
 export default function ProductSection({ id, title, description, features, image, reverse = false }: ProductProps) {
+  const { tr } = useLang();
+  const p = tr.products;
   return (
     <section id={id} className="py-24 md:py-36 overflow-hidden bg-white">
       <div className="max-w-[1400px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -30,7 +33,7 @@ export default function ProductSection({ id, title, description, features, image
           className={`lg:col-span-5 ${reverse ? 'lg:order-2 lg:pl-10' : 'lg:order-1 lg:pr-10'}`}
         >
           <div className="mb-5">
-            <span className="accent-label">Catalog</span>
+            <span className="accent-label">{p.eyebrow}</span>
           </div>
 
           <h2 className="text-[38px] md:text-[56px] font-black tracking-[-0.04em] text-[#1D1D1F] mb-5 leading-[1.08]">
@@ -92,7 +95,7 @@ export default function ProductSection({ id, title, description, features, image
                 cursor: 'pointer',
               }}
             >
-              Buy Now
+              {p.buy_now}
             </button>
 
             {/* Learn More — outline ghost */}
@@ -109,7 +112,7 @@ export default function ProductSection({ id, title, description, features, image
                 cursor: 'pointer',
               }}
             >
-              Learn More
+              {p.learn_more}
               <ChevronRight
                 size={15}
                 strokeWidth={2.5}
