@@ -118,12 +118,12 @@ export default function Navbar() {
             maxWidth: 1200,
             marginLeft: 24,
             marginRight: 24,
-            borderRadius: isScrolled ? 20 : 0,
-            background: isScrolled ? 'rgba(255,255,255,0.82)' : 'transparent',
-            backdropFilter: isScrolled ? 'blur(24px) saturate(180%)' : 'none',
-            WebkitBackdropFilter: isScrolled ? 'blur(24px) saturate(180%)' : 'none',
-            border: isScrolled ? '1px solid rgba(255,255,255,0.55)' : '1px solid transparent',
-            boxShadow: isScrolled ? '0 8px 40px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.8) inset' : 'none',
+            borderRadius: isScrolled || isMenuOpen ? 20 : 0,
+            background: isScrolled || isMenuOpen ? 'rgba(255,255,255,0.95)' : 'transparent',
+            backdropFilter: isScrolled || isMenuOpen ? 'blur(24px) saturate(180%)' : 'none',
+            WebkitBackdropFilter: isScrolled || isMenuOpen ? 'blur(24px) saturate(180%)' : 'none',
+            border: isScrolled || isMenuOpen ? '1px solid rgba(255,255,255,0.55)' : '1px solid transparent',
+            boxShadow: isScrolled || isMenuOpen ? '0 8px 40px rgba(0,0,0,0.08), 0 1px 0 rgba(255,255,255,0.8) inset' : 'none',
             transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
           }}
         >
@@ -256,15 +256,15 @@ export default function Navbar() {
             <motion.div
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-[100] bg-black/30 backdrop-blur-sm lg:hidden"
               onClick={() => setIsMenuOpen(false)}
             />
             <motion.div
               ref={mobileMenuRef}
-              initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -16 }}
+              initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="fixed inset-x-4 top-4 z-[45] rounded-3xl bg-white/95 backdrop-blur-2xl px-8 pt-8 pb-10 lg:hidden"
-              style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.14), 0 1px 0 rgba(255,255,255,0.9) inset' }}
+              className="fixed top-0 left-0 w-full z-[110] bg-white/98 backdrop-blur-2xl px-8 pt-8 pb-10 lg:hidden"
+              style={{ boxShadow: '0 24px 80px rgba(0,0,0,0.14)', minHeight: '100dvh' }}
             >
               {/* Mobile header */}
               <div className="flex items-center justify-between mb-8">

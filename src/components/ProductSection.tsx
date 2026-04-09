@@ -81,9 +81,12 @@ export default function ProductSection({ id, title, description, features, image
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
 
             {/* Buy Now — primary black */}
-            <button
+            <a
+              href="https://shop.bikon.uz"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 font-semibold text-[14px]
-                         tracking-[-0.01em] text-white
+                         tracking-[-0.01em] text-white no-underline
                          transition-all duration-200 ease-out
                          hover:scale-[1.02] hover:shadow-[0_8px_28px_-6px_rgba(0,0,0,0.35)]
                          active:scale-[0.97]"
@@ -91,12 +94,10 @@ export default function ProductSection({ id, title, description, features, image
                 background: '#111',
                 padding: '13px 26px',
                 borderRadius: 12,
-                border: 'none',
-                cursor: 'pointer',
               }}
             >
               {p.buy_now}
-            </button>
+            </a>
 
             {/* Learn More — outline ghost */}
             <button
@@ -139,29 +140,21 @@ export default function ProductSection({ id, title, description, features, image
             {/* Subtle inner glow */}
             <div className={`absolute top-0 ${reverse ? 'right-0' : 'left-0'} w-48 h-48 bg-blue-400/5 rounded-full blur-2xl pointer-events-none`} />
 
-            <div className="relative rounded-[40px] overflow-hidden bg-[#F0F0F5]">
+            <div className="relative rounded-[40px] overflow-hidden bg-[#F0F0F5]
+                           flex items-center justify-center"
+                 style={{ minHeight: 320 }}>
               <img
                 src={image}
                 alt={title}
+                loading="lazy"
+                decoding="async"
                 referrerPolicy="no-referrer"
-                className="w-full h-auto object-cover transition-transform duration-[1600ms] ease-out group-hover:scale-[1.04]"
+                className="w-full h-full object-contain transition-transform duration-[1600ms] ease-out group-hover:scale-[1.04]"
+                style={{ maxHeight: 480 }}
               />
               <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
             </div>
 
-            {/* Floating info badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 8 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className={`absolute ${reverse ? 'bottom-10 right-10' : 'bottom-10 left-10'}
-                          bg-white/95 backdrop-blur-sm px-5 py-3.5 rounded-lg card-shadow
-                          border border-black/[0.06] hidden md:block`}
-            >
-              <p className="text-[9px] font-bold uppercase tracking-[0.25em] text-[#8E8E93] mb-0.5">Model 2026</p>
-              <p className="text-[13px] font-semibold text-[#1D1D1F] tracking-[-0.01em]">Bikon Premium Series</p>
-            </motion.div>
           </div>
         </motion.div>
       </div>

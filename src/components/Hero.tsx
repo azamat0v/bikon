@@ -307,7 +307,7 @@ export default function Hero() {
             >
               <motion.img
                 src="/main.png"
-                alt="Bikon premium devices — laptop, monitor and PC"
+                alt="Bikon quality devices — laptop, monitor and PC"
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
                 draggable={false}

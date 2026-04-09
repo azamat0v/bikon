@@ -65,17 +65,15 @@ export default function Footer() {
           <p className="text-[12px] text-[#8E8E93] tracking-[-0.01em]">
             {tr.footer.copyright}
           </p>
-          <div className="flex gap-8">
-            {tr.footer.legal.map((label) => (
-              <a
-                key={label}
-                href="#"
-                className="text-[12px] text-[#8E8E93] hover:text-[#1D1D1F] transition-colors duration-150"
-              >
-                {label}
-              </a>
-            ))}
-          </div>
+          <a
+            href="https://avzo.uz"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[12px] text-[#8E8E93] hover:text-[#1D1D1F] transition-colors duration-150 tracking-[-0.01em]"
+          >
+            Developed by{' '}
+            <span className="font-semibold text-[#6E6E73]">Avzo.uz</span>
+          </a>
         </div>
       </div>
     </footer>

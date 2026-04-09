@@ -1,94 +1,86 @@
 import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, animate } from 'motion/react';
+import { motion, AnimatePresence, animate } from 'motion/react';
 
 const SESSION_KEY = 'bikon_intro_shown';
 
 interface PageLoaderProps {
-  /** Called once the exit animation fully completes */
   onDone: () => void;
 }
 
 export default function PageLoader({ onDone }: PageLoaderProps) {
-  /* ── Skip if already shown this session ────────────────────────────────── */
-  const alreadySeen = false; // TEMP: always show — sessionStorage.getItem(SESSION_KEY) === '1';
+  /* ── Skip on return visits (currently forced to show always for testing) ── */
+  const alreadySeen = sessionStorage.getItem(SESSION_KEY) === '1';
 
-  const [visible, setVisible]     = useState(!alreadySeen);
-  const [exiting, setExiting]     = useState(false);
-  const [progress, setProgress]   = useState(0);
-  const [logoReady, setLogoReady] = useState(false);
+  /* visible = the overlay is mounted in the DOM */
+  const [visible,  setVisible]  = useState(!alreadySeen);
+  const [progress, setProgress] = useState(0);
+  const [logoIn,   setLogoIn]   = useState(false);
 
-  const doneCalledRef = useRef(false);
+  const doneRef = useRef(false);
 
-  /* ── If already seen, bail immediately ─────────────────────────────────── */
+  /* Bail immediately if already seen */
   useEffect(() => {
-    if (alreadySeen) { onDone(); return; }
+    if (alreadySeen) { onDone(); }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* ── Body scroll lock while loader is active ───────────────────────────── */
+  /* Body scroll lock */
   useEffect(() => {
     if (!visible) return;
     document.body.style.overflow = 'hidden';
     return () => { document.body.style.overflow = ''; };
   }, [visible]);
 
-  /* ── Progress bar + page-load detection ────────────────────────────────── */
+  /* Progress + page-load detection */
   useEffect(() => {
     if (!visible) return;
 
-    // Phase 1 — rush to 65% in 400ms
-    const phase1 = setTimeout(() => {
-      setProgress(65);
-    }, 80);
+    // Logo fades in almost immediately
+    const t0 = setTimeout(() => setLogoIn(true), 180);
 
-    // Logo entrance after a brief moment
-    const logoTimer = setTimeout(() => setLogoReady(true), 200);
+    // Rush to 60% right away
+    const t1 = setTimeout(() => setProgress(60), 100);
 
-    // Phase 2 — finish to 100% on window load (or after max 2.5s)
     const finish = () => {
       setProgress(100);
-      // Small delay so the bar visually hits 100 before slide-up
-      setTimeout(startExit, 320);
+      // Give the bar a moment to visually reach 100 %
+      setTimeout(() => {
+        // unmount triggers the exit animation via AnimatePresence
+        setVisible(false);
+      }, 420);
     };
 
     let fallback: ReturnType<typeof setTimeout>;
-
     if (document.readyState === 'complete') {
-      fallback = setTimeout(finish, 500);
+      fallback = setTimeout(finish, 600);
     } else {
       window.addEventListener('load', finish, { once: true });
-      fallback = setTimeout(finish, 2800); // max wait
+      fallback = setTimeout(finish, 3000); // hard cap
     }
 
     return () => {
-      clearTimeout(phase1);
-      clearTimeout(logoTimer);
+      clearTimeout(t0);
+      clearTimeout(t1);
       clearTimeout(fallback);
       window.removeEventListener('load', finish);
     };
   }, [visible]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  /* ── Kick off the exit curtain ─────────────────────────────────────────── */
-  const startExit = () => setExiting(true);
-
-  /* ── Called when exit animation finishes ───────────────────────────────── */
+  /* Called after the curtain slides fully off-screen */
   const handleExitComplete = () => {
-    if (doneCalledRef.current) return;
-    doneCalledRef.current = true;
+    if (doneRef.current) return;
+    doneRef.current = true;
     sessionStorage.setItem(SESSION_KEY, '1');
-    setVisible(false);
     onDone();
   };
 
-  if (!visible) return null;
-
   return (
     <AnimatePresence onExitComplete={handleExitComplete}>
-      {!exiting && (
+      {visible && (
         <motion.div
-          key="loader"
+          key="page-loader"
           initial={{ y: 0 }}
           exit={{ y: '-100%' }}
-          transition={{ duration: 0.95, ease: [0.76, 0, 0.24, 1] }}
+          transition={{ duration: 0.9, ease: [0.76, 0, 0.24, 1] }}
           style={{
             position: 'fixed',
             inset: 0,
@@ -101,7 +93,7 @@ export default function PageLoader({ onDone }: PageLoaderProps) {
             overflow: 'hidden',
           }}
         >
-          {/* ── Progress bar ─────────────────────────────────────── */}
+          {/* ── Progress bar ─────────────────────────────────────────── */}
           <div
             style={{
               position: 'absolute',
@@ -109,7 +101,7 @@ export default function PageLoader({ onDone }: PageLoaderProps) {
               left: 0,
               right: 0,
               height: 2,
-              background: 'rgba(0,113,227,0.12)',
+              background: 'rgba(0,113,227,0.10)',
             }}
           >
             <motion.div
@@ -124,20 +116,26 @@ export default function PageLoader({ onDone }: PageLoaderProps) {
             />
           </div>
 
-          {/* ── Logo ─────────────────────────────────────────────── */}
+          {/* ── Logo ─────────────────────────────────────────────────── */}
           <AnimatePresence>
-            {logoReady && (
+            {logoIn && (
               <motion.div
-                key="logo"
-                initial={{ opacity: 0, scale: 0.88, y: 12 }}
+                key="logo-block"
+                initial={{ opacity: 0, scale: 0.88, y: 16 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
-                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 32 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 28 }}
               >
-                {/* Clip wrapper compensates for SVG 2000×2000 viewBox whitespace */}
+                {/* Pulse wrapper — clip compensates for SVG 2000×2000 whitespace */}
                 <motion.div
-                  animate={{ opacity: [1, 0.7, 1] }}
-                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', repeatType: 'mirror' }}
+                  animate={{ opacity: [1, 0.65, 1] }}
+                  transition={{
+                    duration: 1.9,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    repeatType: 'mirror',
+                  }}
                   style={{
                     height: 72,
                     overflow: 'hidden',
@@ -150,26 +148,21 @@ export default function PageLoader({ onDone }: PageLoaderProps) {
                     src="/bikon.svg"
                     alt="Bikon"
                     draggable={false}
-                    style={{
-                      height: 188,
-                      width: 'auto',
-                      display: 'block',
-                      flexShrink: 0,
-                    }}
+                    style={{ height: 188, width: 'auto', display: 'block', flexShrink: 0 }}
                   />
                 </motion.div>
 
-                {/* Subtle tagline */}
+                {/* Tagline */}
                 <motion.p
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.25 }}
+                  transition={{ duration: 0.45, delay: 0.22 }}
                   style={{
                     fontSize: 11,
                     fontWeight: 700,
                     letterSpacing: '0.22em',
                     textTransform: 'uppercase',
-                    color: '#AAAAAA',
+                    color: '#BBBBBB',
                     fontFamily: '"Inter", var(--font-sans), sans-serif',
                   }}
                 >
@@ -179,8 +172,8 @@ export default function PageLoader({ onDone }: PageLoaderProps) {
             )}
           </AnimatePresence>
 
-          {/* ── Bottom percentage counter ─────────────────────────── */}
-          <motion.span
+          {/* ── Percentage counter ───────────────────────────────────── */}
+          <span
             style={{
               position: 'absolute',
               bottom: 40,
@@ -194,24 +187,24 @@ export default function PageLoader({ onDone }: PageLoaderProps) {
             }}
           >
             <ProgressCounter target={progress} />
-          </motion.span>
+          </span>
         </motion.div>
       )}
     </AnimatePresence>
   );
 }
 
-/* ── Animated counter ────────────────────────────────────────────────────── */
+/* ── Smooth animated counter ─────────────────────────────────────────────── */
 function ProgressCounter({ target }: { target: number }) {
   const [display, setDisplay] = useState(0);
 
   useEffect(() => {
-    const controls = animate(display, target, {
+    const ctrl = animate(display, target, {
       duration: 0.5,
       ease: 'easeOut',
       onUpdate: (v) => setDisplay(Math.round(v)),
     });
-    return controls.stop;
+    return ctrl.stop;
   }, [target]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return <>{display}%</>;

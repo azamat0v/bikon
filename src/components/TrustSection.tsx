@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { Settings2, BarChart3, ShieldCheck, Truck, type LucideIcon } from 'lucide-react';
+import { Wrench, Award, ShieldCheck, Truck, type LucideIcon } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
 
 /* ── Icons only — text comes from tr.trust.features at render time ────────── */
-const ICONS = [Settings2, BarChart3, ShieldCheck, Truck];
+const ICONS = [Wrench, Award, ShieldCheck, Truck];
 
 
 /* ── Single card ─────────────────────────────────────────────────────────── */

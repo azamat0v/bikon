@@ -229,6 +229,8 @@ export default function CTASection() {
                 ref={imgRef}
                 src="/bestseller.png"
                 alt="Bikon Bestseller"
+                loading="lazy"
+                decoding="async"
                 draggable={false}
                 style={{
                   position: 'relative',

@@ -40,7 +40,18 @@ function CategoryCard({
   learnMore: string;
 }) {
   const [hovered, setHovered] = useState(false);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
   const active = canHover && hovered;
+
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const cat = { ...asset, series, title }; // scale only on real pointer devices
 
@@ -64,9 +75,10 @@ function CategoryCard({
       onClick={scrollTo}
       /* ─── Height breakpoints via Tailwind ─── */
       className="relative overflow-hidden cursor-pointer select-none
-                 h-[550px] md:h-[500px] lg:h-[650px]"
+                 min-h-[500px] md:min-h-0 md:h-[500px] lg:h-[600px]"
       style={{
         borderRadius: 8,
+        background: cat.light ? '#F2F2F7' : '#1C1C1E',
         boxShadow: active
           ? '0 28px 64px -10px rgba(0,0,0,0.22), 0 8px 24px -6px rgba(0,0,0,0.10)'
           : '0 4px 20px -4px rgba(0,0,0,0.08)',
@@ -82,8 +94,10 @@ function CategoryCard({
           position: 'absolute',
           inset: 0,
           backgroundImage: `url(${cat.image})`,
-          backgroundSize: 'cover',
+          backgroundSize: isMobile ? 'contain' : 'cover',
           backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+          paddingTop: isMobile ? 40 : 0,
           willChange: 'transform',
         }}
       />
@@ -95,8 +109,8 @@ function CategoryCard({
           position: 'absolute',
           inset: 0,
           background: cat.light
-            ? 'linear-gradient(to top, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.20) 32%, transparent 60%)'
-            : 'linear-gradient(to top, rgba(0,0,0,0.68) 0%, rgba(0,0,0,0.22) 32%, transparent 60%)',
+            ? 'linear-gradient(to top, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0.40) 30%, rgba(255,255,255,0.10) 55%, transparent 75%)'
+            : 'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.38) 35%, rgba(0,0,0,0.10) 60%, transparent 80%)',
           pointerEvents: 'none',
         }}
       />
@@ -108,23 +122,9 @@ function CategoryCard({
           bottom: 0,
           left: 0,
           right: 0,
-          padding: '40px 36px 44px',
+          padding: '40px 36px 48px',
         }}
       >
-        {/* Series eyebrow */}
-        <p
-          style={{
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: '0.20em',
-            textTransform: 'uppercase',
-            color: labelColor,
-            marginBottom: 8,
-            fontFamily: '"Inter", var(--font-sans), sans-serif',
-          }}
-        >
-          {cat.series}
-        </p>
 
         {/* Title — clamp prevents 3-line wrap on small mobile */}
         <h3
