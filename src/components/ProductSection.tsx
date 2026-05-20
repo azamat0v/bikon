@@ -1,6 +1,7 @@
 import { motion } from 'motion/react';
 import { ChevronRight, LucideIcon } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
+import { useRouter, type Page } from '../context/RouterContext';
 
 export interface ProductFeature {
   icon: LucideIcon;
@@ -15,11 +16,13 @@ export interface ProductProps {
   features: ProductFeature[];
   image: string;
   reverse?: boolean;
+  learnMoreHref?: string;
 }
 
-export default function ProductSection({ id, title, description, features, image, reverse = false }: ProductProps) {
+export default function ProductSection({ id, title, description, features, image, reverse = false, learnMoreHref }: ProductProps) {
   const { tr } = useLang();
   const p = tr.products;
+  const { navigate } = useRouter();
   return (
     <section id={id} className="py-24 md:py-36 overflow-hidden bg-white">
       <div className="max-w-[1400px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -101,6 +104,7 @@ export default function ProductSection({ id, title, description, features, image
 
             {/* Learn More — outline ghost */}
             <button
+              onClick={learnMoreHref ? () => navigate(learnMoreHref as Page) : undefined}
               className="inline-flex items-center justify-center gap-2 font-semibold text-[14px]
                          tracking-[-0.01em] text-[#1D1D1F]
                          transition-all duration-200 ease-out
@@ -110,7 +114,7 @@ export default function ProductSection({ id, title, description, features, image
                 padding: '12px 24px',
                 borderRadius: 12,
                 border: '1.5px solid #E5E7EB',
-                cursor: 'pointer',
+                cursor: learnMoreHref ? 'pointer' : 'default',
               }}
             >
               {p.learn_more}

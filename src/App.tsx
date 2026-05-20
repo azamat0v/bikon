@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import Lenis from 'lenis';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -8,8 +8,18 @@ import TrustSection from './components/TrustSection';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import PageLoader from './components/PageLoader';
+import AboutPage from './components/AboutPage';
+import MonitorsPage from './components/MonitorsPage';
+import LaptopsPage from './components/LaptopsPage';
+import AiosPage from './components/AiosPage';
+import NovaPage from './components/NovaPage';
+import MatrixPage from './components/MatrixPage';
+import OptimaPage from './components/OptimaPage';
+import BlogPage from './components/BlogPage';
 import { LenisContext } from './context/LenisContext';
 import { LanguageProvider, useLang } from './context/LanguageContext';
+import { RouterProvider, useRouter } from './context/RouterContext';
+import { getProducts, mediaUrl, type StrapiProduct } from './lib/strapi';
 import {
   Monitor,
   Cpu,
@@ -37,6 +47,7 @@ const BASE_PRODUCTS = [
     ],
     image: 'laptop.png',
     reverse: false,
+    learnMoreHref: '/laptops',
   },
   {
     id: 'monobloklar',
@@ -50,7 +61,7 @@ const BASE_PRODUCTS = [
     reverse: true,
   },
   {
-    id: 'pc',
+    id: 'cases',
     features: [
       { icon: HardDrive,   text: 'Tempered Glass & Metal Build'   },
       { icon: Lightbulb,   text: 'RGB Support (Phantom series)'   },
@@ -70,26 +81,45 @@ const BASE_PRODUCTS = [
     ],
     image: 'monitor.png',
     reverse: true,
+    learnMoreHref: '/monitors',
   },
 ];
 
 /* ─────────────────────────────────────────────────────────────────────────
-   AppContent — lives INSIDE LanguageProvider so useLang() works correctly
+   Home — the main landing page
 ───────────────────────────────────────────────────────────────────────── */
-function AppContent() {
-  const { tr } = useLang();                    // ✅ reads live context
+function HomePage() {
+  const { tr, lang } = useLang();
   const [lenis, setLenis] = useState<Lenis | null>(null);
   const [loaderDone, setLoaderDone] = useState(false);
+  const [cmsProducts, setCmsProducts] = useState<StrapiProduct[]>([]);
   const rafId = useRef<number>(0);
 
-  /* Build translated products on every language-switch render */
-  const products: ProductProps[] = BASE_PRODUCTS.map((base, i) => ({
-    ...base,
-    title: tr.products.data[i].title,
-    description: tr.products.data[i].description,
-  }));
+  /* ── Fetch CMS products; silently fall back to translations on error ── */
+  const fetchProducts = useCallback(() => {
+    getProducts(lang)
+      .then(setCmsProducts)
+      .catch(() => setCmsProducts([]));
+  }, [lang]);
 
-  /* Lenis smooth-scroll setup */
+  useEffect(() => { fetchProducts(); }, [fetchProducts]);
+
+  /* ── Merge: CMS data takes priority, translations are the fallback ── */
+  const products: ProductProps[] = BASE_PRODUCTS.map((base, i) => {
+    const cms = cmsProducts.find(p => p.category_id === base.id);
+    const coverUrl = mediaUrl(cms?.cover?.url);
+    return {
+      ...base,
+      title:       cms?.title       ?? tr.products.data[i].title,
+      description: cms?.description ?? tr.products.data[i].description,
+      image:       coverUrl ?? base.image,
+      features: base.features.map((f, fi) => ({
+        ...f,
+        text: (cms?.[`feature_${fi + 1}` as keyof StrapiProduct] as string | null) ?? f.text,
+      })),
+    };
+  });
+
   useEffect(() => {
     const lenisInstance = new Lenis({
       duration: 1.2,
@@ -118,9 +148,7 @@ function AppContent() {
 
   return (
     <LenisContext.Provider value={lenis}>
-      {/* Intro preloader — sits above everything, self-removes after reveal */}
       <PageLoader onDone={() => setLoaderDone(true)} />
-
       <div
         className="min-h-screen selection:bg-black selection:text-white"
         style={{ opacity: loaderDone ? 1 : 0, transition: 'opacity 0.3s ease' }}
@@ -139,6 +167,7 @@ function AppContent() {
               features={product.features}
               image={product.image}
               reverse={product.reverse}
+              learnMoreHref={product.learnMoreHref}
             />
           ))}
           <CTASection />
@@ -150,12 +179,31 @@ function AppContent() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   App — just provides the language context, nothing else
+   AppContent — reads the router and renders the correct page
+───────────────────────────────────────────────────────────────────────── */
+function AppContent() {
+  const { page } = useRouter();
+
+  if (page === '/about')    return <AboutPage />;
+  if (page === '/monitors') return <MonitorsPage />;
+  if (page === '/laptops')  return <LaptopsPage />;
+  if (page === '/aios')     return <AiosPage />;
+  if (page === '/nova')     return <NovaPage />;
+  if (page === '/matrix')   return <MatrixPage />;
+  if (page === '/optima')   return <OptimaPage />;
+  if (page === '/blog')     return <BlogPage />;
+  return <HomePage />;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   App — language + router providers
 ───────────────────────────────────────────────────────────────────────── */
 export default function App() {
   return (
     <LanguageProvider>
-      <AppContent />
+      <RouterProvider>
+        <AppContent />
+      </RouterProvider>
     </LanguageProvider>
   );
 }

@@ -1,8 +1,10 @@
 import { Instagram, Twitter, Facebook, Youtube } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
+import { useRouter } from '../context/RouterContext';
 
 export default function Footer() {
   const { tr } = useLang();
+  const { navigate } = useRouter();
   return (
     <footer className="bg-[#F5F5F7] text-[#6E6E73] text-[13px] font-normal overflow-hidden">
       <div className="max-w-[1400px] mx-auto px-8 py-16">
@@ -42,18 +44,34 @@ export default function Footer() {
                   {col.heading}
                 </h4>
                 <ul className="space-y-3">
-                  {col.links.map((label, i) => (
-                    <li key={i}>
-                      <a
-                        href={ci === 0
-                          ? ['#noutbuklar','#monobloklar','#pc','#monitorlar'][i] ?? '#'
-                          : '#'}
-                        className="text-[13px] text-[#6E6E73] hover:text-[#1D1D1F] transition-colors duration-150"
-                      >
-                        {label}
-                      </a>
-                    </li>
-                  ))}
+                  {col.links.map((label, i) => {
+                    // Products col (ci=0) → scroll anchors; About col (ci=1, i=0) → /about page
+                    const isAboutLink = ci === 1 && i === 0;
+                    const isBlogLink  = ci === 1 && i === 2;
+                    const href =
+                      ci === 0
+                        ? ['#noutbuklar','#monobloklar','#pc','#monitorlar'][i] ?? '#'
+                        : isAboutLink
+                        ? '/about'
+                        : isBlogLink
+                        ? '/blog'
+                        : '#';
+                    return (
+                      <li key={i}>
+                        <a
+                          href={href}
+                          onClick={
+                            isAboutLink ? (e) => { e.preventDefault(); navigate('/about'); }
+                            : isBlogLink ? (e) => { e.preventDefault(); navigate('/blog'); }
+                            : undefined
+                          }
+                          className="text-[13px] text-[#6E6E73] hover:text-[#1D1D1F] transition-colors duration-150"
+                        >
+                          {label}
+                        </a>
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ))}
