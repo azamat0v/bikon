@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { ChevronRight, LucideIcon } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
 import { useRouter, type Page } from '../context/RouterContext';
+import { useShopModal } from '../context/ShopModalContext';
 
 export interface ProductFeature {
   icon: LucideIcon;
@@ -23,6 +24,7 @@ export default function ProductSection({ id, title, description, features, image
   const { tr } = useLang();
   const p = tr.products;
   const { navigate } = useRouter();
+  const { open } = useShopModal();
   return (
     <section id={id} className="py-24 md:py-36 overflow-hidden bg-white">
       <div className="max-w-[1400px] mx-auto px-8 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -85,9 +87,8 @@ export default function ProductSection({ id, title, description, features, image
 
             {/* Buy Now — primary black */}
             <a
-              href="https://shop.bikon.uz"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="javascript:void(0)"
+              onClick={(e) => { e.preventDefault(); open(title); }}
               className="inline-flex items-center justify-center gap-2 font-semibold text-[14px]
                          tracking-[-0.01em] text-white no-underline
                          transition-all duration-200 ease-out
@@ -129,10 +130,10 @@ export default function ProductSection({ id, title, description, features, image
 
         {/* ── Image column ── */}
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
+          initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
           className={`lg:col-span-7 relative ${reverse ? 'lg:order-1' : 'lg:order-2'}`}
         >
           <div
@@ -150,8 +151,9 @@ export default function ProductSection({ id, title, description, features, image
               <img
                 src={image}
                 alt={title}
-                loading="lazy"
+                loading="eager"
                 decoding="async"
+                fetchPriority="high"
                 referrerPolicy="no-referrer"
                 className="w-full h-full object-contain transition-transform duration-[1600ms] ease-out group-hover:scale-[1.04]"
                 style={{ maxHeight: 480 }}

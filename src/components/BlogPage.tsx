@@ -89,8 +89,8 @@ function applyArticleSeo(article: StrapiArticle) {
 }
 
 function resetSeo() {
-  document.title = 'Bikon — Premium Technology';
-  setMeta('description', 'Bikon — O\'zbekiston bozorida premium kompyuter texnikasi ishlab chiqaruvchisi.');
+  document.title = 'Bikon — Advanced Technology';
+  setMeta('description', 'Bikon — O\'zbekiston bozorida ilg\'or kompyuter texnikasi ishlab chiqaruvchisi.');
   setMeta('og:type', 'website', true);
 }
 

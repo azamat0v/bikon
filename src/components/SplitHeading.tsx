@@ -16,7 +16,7 @@ export default function SplitHeading({
   return (
     <div ref={ref} style={style}>
       {text.split('\n').map((line, i) => (
-        <div key={i} style={{ overflow: 'hidden', display: 'block' }}>
+        <div key={i} style={{ overflow: 'hidden', display: 'block', paddingBottom: '0.12em', marginBottom: '-0.12em' }}>
           <motion.span
             style={{ display: 'block' }}
             initial={{ y: '110%' }}

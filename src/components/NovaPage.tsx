@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { ShoppingCart, Wifi, Camera, Cable, Zap, RotateCw, Volume2, MapPin, Layers, Monitor, Bluetooth, Headphones, type LucideIcon } from 'lucide-react';
+import { ShoppingCart, Wifi, Camera, Cable, RotateCw, Volume2, MapPin, Layers, Bluetooth, type LucideIcon } from 'lucide-react';
 
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -8,6 +8,7 @@ import SplitHeading from './SplitHeading';
 import SpecsSection from './SpecsSection';
 import { FloatingPathsBackground } from './ui/floating-paths';
 import { useLang } from '../context/LanguageContext';
+import { useShopModal } from '../context/ShopModalContext';
 
 /* ── Types ──────────────────────────────────────────────────────────────── */
 interface NovaTr {
@@ -120,21 +121,45 @@ function HeroSection({ l }: { l: NovaTr }) {
 
   useEffect(() => {
     if (!videoReady) return;
+    const video = videoRef.current;
+    if (!video) return;
+
+    let isSeeking = false;
+    let pendingTime: number | null = null;
+
+    const doSeek = (t: number) => {
+      if (isSeeking) { pendingTime = t; return; }
+      if (Math.abs(video.currentTime - t) < 0.001) return;
+      isSeeking = true;
+      pendingTime = null;
+      video.currentTime = t;
+    };
+
+    const onSeeked = () => {
+      isSeeking = false;
+      if (pendingTime !== null) doSeek(pendingTime);
+    };
+
+    video.addEventListener('seeked', onSeeked);
+
     const tick = () => {
-      const el    = containerRef.current;
-      const video = videoRef.current;
-      if (el && video && video.duration) {
+      const el = containerRef.current;
+      if (el && video.duration) {
         const scrolled = -el.getBoundingClientRect().top;
         const max = el.offsetHeight - window.innerHeight;
         if (max > 0) {
           const p = Math.max(0, Math.min(1, scrolled / max));
-          video.currentTime = p * video.duration;
+          doSeek(p * video.duration);
         }
       }
       scrollRafRef.current = requestAnimationFrame(tick);
     };
+
     scrollRafRef.current = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(scrollRafRef.current);
+    return () => {
+      cancelAnimationFrame(scrollRafRef.current);
+      video.removeEventListener('seeked', onSeeked);
+    };
   }, [videoReady]);
 
   return (
@@ -242,7 +267,7 @@ function HeroSection({ l }: { l: NovaTr }) {
                 playsInline
                 preload="auto"
                 onLoadedMetadata={() => setVideoReady(true)}
-                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
+                style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center 35%', display: 'block' }}
               />
             </div>
           </div>
@@ -292,7 +317,7 @@ function DisplaySection({ l }: { l: NovaTr }) {
             src="/nova/front.png" alt="NOVA Display" draggable={false}
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.9 }}
-            style={{ width: '100%', maxWidth: 340, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
+            style={{ width: '100%', maxWidth: 560, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
           />
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
@@ -310,17 +335,17 @@ function DisplaySection({ l }: { l: NovaTr }) {
 
   return (
     <div ref={containerRef} style={{ height: '280vh', position: 'relative' }}>
-      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '0 10%' }}>
+      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '0 4%' }}>
         <FloatingPathsBackground position={-1} className="absolute inset-0 w-full h-full" pathClassName="opacity-60" />
 
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8%', width: '100%', position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2%', width: '100%', position: 'relative', zIndex: 1 }}>
 
           {/* Image — scales up as we move to 27" */}
-          <div style={{ flex: '0 0 46%', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ flex: '0 0 60%', display: 'flex', justifyContent: 'center' }}>
             <img
               src="/nova/front.png" alt="NOVA Display" draggable={false}
               style={{
-                width: '100%', maxWidth: 620, height: 'auto', objectFit: 'contain',
+                width: '100%', maxWidth: 1000, height: 'auto', objectFit: 'contain',
                 filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))',
                 transform: `scale(${imageScale})`,
                 transition: 'transform 0.05s linear',
@@ -582,13 +607,13 @@ function CameraAndSoundSection({ l }: { l: NovaTr }) {
 /* ─────────────────────────────────────────────────────────────────────────
    ConnectivitySection — ports & wireless overview
 ───────────────────────────────────────────────────────────────────────── */
-const PORTS: { Icon: React.ElementType; label: string; spec: string }[] = [
-  { Icon: Monitor,    label: 'HDMI 2.0',  spec: 'Video Output'    },
-  { Icon: Cable,      label: 'USB-C',     spec: 'Data + Power'    },
-  { Icon: Cable,      label: 'USB-A ×3',  spec: 'USB 3.2 Gen 1'  },
-  { Icon: Headphones, label: '3.5mm',     spec: 'Audio Jack'      },
-  { Icon: Wifi,       label: 'Wi-Fi 6',   spec: '802.11ax'        },
-  { Icon: Bluetooth,  label: 'BT 5.0',    spec: 'Bluetooth'       },
+const PORTS: { Icon: React.ElementType | string; label: string; spec: string }[] = [
+  { Icon: '/icons/hdmi.png', label: 'HDMI 2.0',     spec: 'Video Output'    },
+  { Icon: '/icons/hdmi.png', label: 'DisplayPort',  spec: 'DP 1.4 Output'   },
+  { Icon: '/icons/usb.png',  label: 'USB-A ×4',    spec: 'USB 3.2 Gen 1'   },
+  { Icon: '/icons/aux.png',  label: '3.5mm',     spec: 'Audio Jack'      },
+  { Icon: Wifi,              label: 'Wi-Fi 6',   spec: '802.11ax'        },
+  { Icon: Bluetooth,         label: 'BT 5.0',    spec: 'Bluetooth'       },
 ];
 
 function ConnectivitySection({ l }: { l: NovaTr }) {
@@ -639,7 +664,12 @@ function ConnectivitySection({ l }: { l: NovaTr }) {
           justifyContent: 'center', maxWidth: 860, position: 'relative', zIndex: 1,
         }}
       >
-        {PORTS.map(({ Icon, label, spec }, i) => (
+        {PORTS.map(({ Icon, label, spec }, i) => {
+          const IconEl = Icon as React.ElementType;
+          const iconContent = typeof Icon === 'string'
+            ? <img src={Icon} alt={label} style={{ width: 36, height: 36, objectFit: 'contain' as const }} />
+            : <IconEl size={28} color="#4da3ff" strokeWidth={1.7} />;
+          return (
           <motion.div
             key={label}
             initial={{ opacity: 0, scale: 0.94 }}
@@ -669,19 +699,20 @@ function ConnectivitySection({ l }: { l: NovaTr }) {
             }}
           >
             <div style={{
-              width: 44, height: 44, borderRadius: 11,
+              width: 60, height: 60, borderRadius: 14,
               background: 'rgba(77,163,255,0.08)',
               border: '1px solid rgba(77,163,255,0.16)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Icon size={20} color="#4da3ff" strokeWidth={1.7} />
+              {iconContent}
             </div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', margin: 0, marginBottom: 4 }}>{label}</p>
               <p style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.36)', letterSpacing: '0.06em', textTransform: 'uppercase' as const, margin: 0 }}>{spec}</p>
             </div>
           </motion.div>
-        ))}
+          );
+        })}
       </motion.div>
     </section>
   );
@@ -715,7 +746,7 @@ function BentoSection({ l }: { l: NovaTr }) {
     { label: 'Wi-Fi 6',        Icon: Wifi     },
     { label: 'Full HD Webcam', Icon: Camera   },
     { label: 'HDMI 2.1',       Icon: Cable    },
-    { label: 'USB-C',          Icon: Zap      },
+    { label: 'DisplayPort',    Icon: Cable    },
   ];
   const SMALLS_2: { label: string; Icon: LucideIcon }[] = [
     { label: 'Portrait 90°',       Icon: RotateCw },
@@ -946,6 +977,7 @@ function VerticalSection({ l }: { l: NovaTr }) {
 ───────────────────────────────────────────────────────────────────────── */
 function LineupSection({ l }: { l: NovaTr }) {
   const isMobile = useIsMobile();
+  const { open } = useShopModal();
   return (
     <section id="lineup" style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center',
@@ -1009,7 +1041,7 @@ function LineupSection({ l }: { l: NovaTr }) {
               src="/nova/front.png"
               alt="Bikon NOVA"
               style={{
-                maxHeight: 220,
+                maxHeight: 360,
                 maxWidth: '100%',
                 objectFit: 'contain',
                 filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.6))',
@@ -1050,9 +1082,8 @@ function LineupSection({ l }: { l: NovaTr }) {
 
             {/* Buy button */}
             <a
-              href="https://shop.bikon.uz"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="javascript:void(0)"
+              onClick={(e: React.MouseEvent) => { e.preventDefault(); open('Bikon NOVA AiO'); }}
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 background: '#fff', color: '#000',
@@ -1602,6 +1633,7 @@ function AppsSection({ l }: { l: NovaTr }) {
 ───────────────────────────────────────────────────────────────────────── */
 function CTASection({ l }: { l: NovaTr }) {
   const isMobile = useIsMobile();
+  const { open } = useShopModal();
   return (
     <section style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -1629,7 +1661,7 @@ function CTASection({ l }: { l: NovaTr }) {
           style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}
         >
           <motion.a
-            href="https://shop.bikon.uz" target="_blank" rel="noopener noreferrer"
+            href="javascript:void(0)" onClick={(e: React.MouseEvent) => { e.preventDefault(); open('Bikon NOVA AiO'); }}
             whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: '#000', padding: '14px 30px', borderRadius: 13, fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', letterSpacing: '-0.01em' }}
           >

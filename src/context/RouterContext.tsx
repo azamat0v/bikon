@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 
-export type Page = '/' | '/about' | '/monitors' | '/laptops' | '/aios' | '/nova' | '/blog' | '/matrix' | '/optima';
+export type Page = '/' | '/about' | '/monitors' | '/laptops' | '/aios' | '/nova' | '/blog' | '/matrix' | '/optima' | '/cases' | '/service-center' | '/careers' | '/how-to-buy' | '/b2b';
 
 interface RouterContextType {
   page: Page;
@@ -22,7 +22,12 @@ function getPage(path = window.location.pathname): Page {
   if (path === '/nova')            return '/nova';
   if (path === '/matrix')          return '/matrix';
   if (path === '/optima')          return '/optima';
-  if (path.startsWith('/blog'))    return '/blog';
+  if (path === '/cases')            return '/cases';
+  if (path === '/service-center')   return '/service-center';
+  if (path === '/careers')          return '/careers';
+  if (path === '/how-to-buy')       return '/how-to-buy';
+  if (path === '/b2b')              return '/b2b';
+  if (path.startsWith('/blog'))     return '/blog';
   return '/';
 }
 

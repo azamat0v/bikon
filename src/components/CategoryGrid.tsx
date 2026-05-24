@@ -2,14 +2,15 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
+import { useRouter, type Page } from '../context/RouterContext';
 
 /* ── Config ──────────────────────────────────────────────────────────────── */
 /* ── Static assets — text injected from translations at render time ────────── */
-const CATEGORY_ASSETS = [
-  { id: 'noutbuklar',  image: '/categories/laptop_category.jpg',    light: true  },
-  { id: 'monobloklar', image: '/categories/monoblock_category.jpg', light: true  },
-  { id: 'monitorlar', image: '/categories/monitor_category.jpg',   light: true  },
-  { id: 'pc',         image: '/categories/case_category.jpg',      light: false },
+const CATEGORY_ASSETS: { id: string; image: string; light: boolean; href: Page }[] = [
+  { id: 'noutbuklar',  image: '/categories/laptop_category.jpg',    light: true,  href: '/laptops'  },
+  { id: 'monobloklar', image: '/categories/monoblock_category.jpg', light: true,  href: '/aios'     },
+  { id: 'monitorlar',  image: '/categories/monitor_category.jpg',   light: true,  href: '/monitors' },
+  { id: 'pc',          image: '/categories/case_category.jpg',      light: false, href: '/cases'    },
 ];
 
 
@@ -43,6 +44,7 @@ function CategoryCard({
   const [isMobile, setIsMobile] = useState(() =>
     typeof window !== 'undefined' ? window.innerWidth < 768 : false
   );
+  const { navigate } = useRouter();
   const active = canHover && hovered;
 
   useEffect(() => {
@@ -53,13 +55,9 @@ function CategoryCard({
     return () => mq.removeEventListener('change', handler);
   }, []);
 
-  const cat = { ...asset, series, title }; // scale only on real pointer devices
+  const cat = { ...asset, series, title };
 
-  const scrollTo = () => {
-    const el = document.getElementById(cat.id);
-    if (!el) return;
-    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
-  };
+  const goToPage = () => navigate(asset.href);
 
   const labelColor = cat.light ? 'rgba(0,0,0,0.45)' : 'rgba(255,255,255,0.65)';
   const titleColor = cat.light ? '#0A0A0A' : '#FFFFFF';
@@ -72,7 +70,7 @@ function CategoryCard({
       transition={{ duration: 0.68, delay: index * 0.10, ease: [0.16, 1, 0.3, 1] }}
       onHoverStart={() => canHover && setHovered(true)}
       onHoverEnd={() => setHovered(false)}
-      onClick={scrollTo}
+      onClick={goToPage}
       /* ─── Height breakpoints via Tailwind ─── */
       className="relative overflow-hidden cursor-pointer select-none
                  min-h-[500px] md:min-h-0 md:h-[500px] lg:h-[600px]"
@@ -143,7 +141,7 @@ function CategoryCard({
 
         {/* CTA */}
         <motion.button
-          onClick={(e) => { e.stopPropagation(); scrollTo(); }}
+          onClick={(e) => { e.stopPropagation(); goToPage(); }}
           animate={{ x: active ? 4 : 0 }}
           transition={{ type: 'spring', stiffness: 360, damping: 22 }}
           style={{

@@ -31,8 +31,9 @@ export default function Navbar() {
   const isNovaPage     = page === '/nova';
   const isMatrixPage   = page === '/matrix';
   const isOptimaPage   = page === '/optima';
+  const isCasesPage    = page === '/cases';
   const isBlogPage     = page === '/blog';
-  const isDarkPage     = isAboutPage || isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isBlogPage;
+  const isDarkPage     = isAboutPage || isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isCasesPage || isBlogPage;
 
   const navLinks = [
     { name: tr.nav.home,     id: 'home'        },
@@ -97,7 +98,7 @@ export default function Navbar() {
     (e: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>, id: string) => {
       e.preventDefault();
       // On About, Monitors, or Laptops page, section links navigate home first
-      if (isAboutPage || isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isBlogPage) {
+      if (isAboutPage || isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isCasesPage || isBlogPage) {
         setIsMenuOpen(false);
         navigate('/');
         // After navigating, the sections won't exist yet — just go to top for Home link
@@ -121,13 +122,13 @@ export default function Navbar() {
       if (isMenuOpen) { lenis?.start(); document.body.style.overflow = ''; setIsMenuOpen(false); setTimeout(go, 100); }
       else go();
     },
-    [lenis, isMenuOpen, isAboutPage, isMonitorsPage, isLaptopsPage, isAiosPage, isNovaPage, isMatrixPage, isOptimaPage, isBlogPage, navigate],
+    [lenis, isMenuOpen, isAboutPage, isMonitorsPage, isLaptopsPage, isAiosPage, isNovaPage, isMatrixPage, isOptimaPage, isCasesPage, isBlogPage, navigate],
   );
 
   const isActive = (id: string) => !isDarkPage && activeSection === id;
   const navTextColor = (id: string) => {
     if (isActive(id)) return '#0071E3';
-    if (isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isBlogPage) return isScrolled ? '#1D1D1F' : 'rgba(255,255,255,0.85)';
+    if (isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isCasesPage || isBlogPage) return isScrolled ? '#1D1D1F' : 'rgba(255,255,255,0.85)';
     return '#1D1D1F';
   };
 
@@ -218,6 +219,7 @@ export default function Navbar() {
                       <button
                         className="flex items-center gap-1 relative group"
                         style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer' }}
+                        onClick={() => { setShowAiosMenu(false); navigate('/aios'); }}
                       >
                         <span
                           className="text-[12px] font-bold uppercase tracking-[0.14em] transition-colors duration-200"
@@ -262,6 +264,7 @@ export default function Navbar() {
                             }}
                           >
                             {[
+                              { label: 'All AiOs',  sub: 'Compare all models',     href: '/aios',   active: isAiosPage   },
                               { label: 'Matrix', sub: 'All-in-One · Gen 12–14', href: '/matrix', active: isMatrixPage },
                               { label: 'Optima', sub: 'All-in-One · Gen 2–3',   href: '/optima', active: isOptimaPage },
                               { label: 'NOVA',   sub: 'All-in-One · Slim',      href: '/nova',   active: isNovaPage  },
@@ -297,7 +300,7 @@ export default function Navbar() {
                 return (
                   <a
                     key={link.id}
-                    href={link.id === 'monitorlar' ? '/monitors' : link.id === 'noutbuklar' ? '/laptops' : (link.id === 'home' ? '#' : `#${link.id}`)}
+                    href={link.id === 'monitorlar' ? '/monitors' : link.id === 'noutbuklar' ? '/laptops' : link.id === 'cases' ? '/cases' : (link.id === 'home' ? '#' : `#${link.id}`)}
                     onClick={(e) => {
                       if (link.id === 'monitorlar') {
                         e.preventDefault(); setIsMenuOpen(false);
@@ -305,6 +308,9 @@ export default function Navbar() {
                       } else if (link.id === 'noutbuklar') {
                         e.preventDefault(); setIsMenuOpen(false);
                         if (!isLaptopsPage) navigate('/laptops');
+                      } else if (link.id === 'cases') {
+                        e.preventDefault(); setIsMenuOpen(false);
+                        if (!isCasesPage) navigate('/cases');
                       } else {
                         scrollTo(e, link.id);
                       }
@@ -314,13 +320,13 @@ export default function Navbar() {
                   >
                     <span
                       className="text-[12px] font-bold uppercase tracking-[0.14em] transition-colors duration-200"
-                      style={{ color: (isMonitorsPage && link.id === 'monitorlar') || (isLaptopsPage && link.id === 'noutbuklar') ? '#0071E3' : navTextColor(link.id) }}
+                      style={{ color: (isMonitorsPage && link.id === 'monitorlar') || (isLaptopsPage && link.id === 'noutbuklar') || (isCasesPage && link.id === 'cases') ? '#0071E3' : navTextColor(link.id) }}
                     >
                       {link.name}
                     </span>
                     <span
                       className="absolute -bottom-1 left-0 w-full h-[1.5px] rounded-full bg-[#0071E3] origin-left transition-transform duration-300"
-                      style={{ transform: (isMonitorsPage && link.id === 'monitorlar') || (isLaptopsPage && link.id === 'noutbuklar') || isActive(link.id) ? 'scaleX(1)' : 'scaleX(0)' }}
+                      style={{ transform: (isMonitorsPage && link.id === 'monitorlar') || (isLaptopsPage && link.id === 'noutbuklar') || (isCasesPage && link.id === 'cases') || isActive(link.id) ? 'scaleX(1)' : 'scaleX(0)' }}
                     />
                   </a>
                 );
@@ -354,7 +360,7 @@ export default function Navbar() {
               >
                 <span
                   className="text-[12px] font-bold uppercase tracking-[0.14em] transition-colors duration-200"
-                  style={{ color: isAboutPage ? '#0071E3' : ((isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isBlogPage) && !isScrolled ? 'rgba(255,255,255,0.85)' : '#1D1D1F') }}
+                  style={{ color: isAboutPage ? '#0071E3' : ((isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isCasesPage || isBlogPage) && !isScrolled ? 'rgba(255,255,255,0.85)' : '#1D1D1F') }}
                 >
                   {tr.nav.about}
                 </span>
@@ -420,7 +426,7 @@ export default function Navbar() {
                 ref={hamburgerRef}
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
                 className="lg:hidden p-2 hover:bg-black/5 rounded-xl transition-colors duration-200"
-                style={{ color: (isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isBlogPage) && !isScrolled ? '#fff' : '#000' }}
+                style={{ color: (isMonitorsPage || isLaptopsPage || isAiosPage || isNovaPage || isMatrixPage || isOptimaPage || isCasesPage || isBlogPage) && !isScrolled ? '#fff' : '#000' }}
                 aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -472,12 +478,23 @@ export default function Navbar() {
                     return (
                       <React.Fragment key={link.id}>
                         <motion.a
-                          href="/matrix"
-                          onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); navigate('/matrix'); }}
+                          href="/aios"
+                          onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); navigate('/aios'); }}
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.22, delay: i * 0.04 }}
                           className="text-[28px] font-black tracking-tight no-underline transition-colors duration-200 py-1"
+                          style={{ color: isAiosPage ? '#0071E3' : '#1D1D1F' }}
+                        >
+                          {link.name}
+                        </motion.a>
+                        <motion.a
+                          href="/matrix"
+                          onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); navigate('/matrix'); }}
+                          initial={{ opacity: 0, x: -12 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.22, delay: i * 0.04 + 0.02 }}
+                          className="text-[24px] font-black tracking-tight no-underline transition-colors duration-200 py-1 pl-5"
                           style={{ color: isMatrixPage ? '#0071E3' : '#888' }}
                         >
                           Matrix
@@ -488,7 +505,7 @@ export default function Navbar() {
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ duration: 0.22, delay: i * 0.04 + 0.04 }}
-                          className="text-[28px] font-black tracking-tight no-underline transition-colors duration-200 py-1"
+                          className="text-[24px] font-black tracking-tight no-underline transition-colors duration-200 py-1 pl-5"
                           style={{ color: isOptimaPage ? '#0071E3' : '#888' }}
                         >
                           Optima
@@ -498,8 +515,8 @@ export default function Navbar() {
                           onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); navigate('/nova'); }}
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ duration: 0.22, delay: i * 0.04 + 0.08 }}
-                          className="text-[28px] font-black tracking-tight no-underline transition-colors duration-200 py-1"
+                          transition={{ duration: 0.22, delay: i * 0.04 + 0.06 }}
+                          className="text-[24px] font-black tracking-tight no-underline transition-colors duration-200 py-1 pl-5"
                           style={{ color: isNovaPage ? '#0071E3' : '#888' }}
                         >
                           NOVA
@@ -510,7 +527,7 @@ export default function Navbar() {
                   return (
                     <motion.a
                       key={link.id}
-                      href={link.id === 'monitorlar' ? '/monitors' : link.id === 'noutbuklar' ? '/laptops' : (link.id === 'home' ? '#' : `#${link.id}`)}
+                      href={link.id === 'monitorlar' ? '/monitors' : link.id === 'noutbuklar' ? '/laptops' : link.id === 'cases' ? '/cases' : (link.id === 'home' ? '#' : `#${link.id}`)}
                       onClick={(e) => {
                         if (link.id === 'monitorlar') {
                           e.preventDefault(); setIsMenuOpen(false);
@@ -518,6 +535,9 @@ export default function Navbar() {
                         } else if (link.id === 'noutbuklar') {
                           e.preventDefault(); setIsMenuOpen(false);
                           if (!isLaptopsPage) navigate('/laptops');
+                        } else if (link.id === 'cases') {
+                          e.preventDefault(); setIsMenuOpen(false);
+                          if (!isCasesPage) navigate('/cases');
                         } else {
                           scrollTo(e, link.id);
                         }
@@ -526,7 +546,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.22, delay: i * 0.04 }}
                       className="text-[28px] font-black tracking-tight no-underline transition-colors duration-200 py-1"
-                      style={{ color: (isMonitorsPage && link.id === 'monitorlar') || (isLaptopsPage && link.id === 'noutbuklar') || isActive(link.id) ? '#0071E3' : '#888' }}
+                      style={{ color: (isMonitorsPage && link.id === 'monitorlar') || (isLaptopsPage && link.id === 'noutbuklar') || (isCasesPage && link.id === 'cases') || isActive(link.id) ? '#0071E3' : '#888' }}
                     >
                       {link.name}
                     </motion.a>

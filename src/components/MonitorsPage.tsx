@@ -4,11 +4,12 @@ import {
   useInView,
   AnimatePresence,
 } from 'motion/react';
-import { ArrowRight, ShoppingCart, ChevronDown, Monitor, Cable, Headphones, Zap, Eye, Shield, Sun, RotateCw, Maximize2, Award, Layers, type LucideIcon } from 'lucide-react';
+import { ArrowRight, ShoppingCart, ChevronDown, Monitor, Zap, Eye, Shield, Sun, RotateCw, Maximize2, Award, Layers, type LucideIcon } from 'lucide-react';
 
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { useLang } from '../context/LanguageContext';
+import { useShopModal } from '../context/ShopModalContext';
 import SplitHeading from './SplitHeading';
 import SpecsSection from './SpecsSection';
 
@@ -699,10 +700,10 @@ function BentoSectionMonitors({ m }: { m: MonitorsTr }) {
 /* ─────────────────────────────────────────────────────────────────────────
    PortsSectionMonitors — D-SUB · HDMI · AUX connectivity
 ───────────────────────────────────────────────────────────────────────── */
-const MONITOR_PORTS = [
-  { Icon: Monitor,    label: 'D-SUB',  spec: 'VGA Input'     },
-  { Icon: Cable,      label: 'HDMI',   spec: 'HDMI 1.4 In'  },
-  { Icon: Headphones, label: 'AUX',    spec: '3.5mm Audio Out' },
+const MONITOR_PORTS: { Icon: React.ElementType | string; label: string; spec: string }[] = [
+  { Icon: '/icons/vga.png',  label: 'D-SUB',  spec: 'VGA Input'       },
+  { Icon: '/icons/hdmi.png', label: 'HDMI',   spec: 'HDMI 1.4 In'    },
+  { Icon: '/icons/aux.png',  label: 'AUX',    spec: '3.5mm Audio Out' },
 ];
 
 function PortsSectionMonitors({ m }: { m: MonitorsTr }) {
@@ -758,7 +759,12 @@ function PortsSectionMonitors({ m }: { m: MonitorsTr }) {
           maxWidth: 720,
         }}
       >
-        {MONITOR_PORTS.map(({ Icon, label, spec }, i) => (
+        {MONITOR_PORTS.map(({ Icon, label, spec }, i) => {
+          const IconEl = Icon as React.ElementType;
+          const iconContent = typeof Icon === 'string'
+            ? <img src={Icon} alt={label} style={{ width: 26, height: 26, objectFit: 'contain' as const }} />
+            : <IconEl size={24} color="#0066CC" strokeWidth={1.6} />;
+          return (
           <motion.div
             key={label}
             initial={{ opacity: 0, y: 20 }}
@@ -792,14 +798,15 @@ function PortsSectionMonitors({ m }: { m: MonitorsTr }) {
               border: '1px solid rgba(0,102,204,0.2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <Icon size={24} color="#0066CC" strokeWidth={1.6} />
+              {iconContent}
             </div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 18, fontWeight: 900, color: '#fff', letterSpacing: '-0.02em', margin: 0, marginBottom: 6 }}>{label}</p>
               <p style={{ fontSize: 11, fontWeight: 600, color: 'rgba(255,255,255,0.38)', letterSpacing: '0.08em', textTransform: 'uppercase' as const, margin: 0 }}>{spec}</p>
             </div>
           </motion.div>
-        ))}
+          );
+        })}
       </motion.div>
 
     </section>
@@ -811,6 +818,7 @@ function PortsSectionMonitors({ m }: { m: MonitorsTr }) {
 ───────────────────────────────────────────────────────────────────────── */
 function ModelLineupSection({ m }: { m: MonitorsTr }) {
   const isMobile = useIsMobile();
+  const { open } = useShopModal();
   const models = [
     {
       name: m.lineup_vision_name,
@@ -994,9 +1002,8 @@ function ModelLineupSection({ m }: { m: MonitorsTr }) {
 
                 {/* Buy button — same for both */}
                 <a
-                  href="https://shop.bikon.uz"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="javascript:void(0)"
+                  onClick={(e) => { e.preventDefault(); open(model.name); }}
                   style={{
                     display: 'inline-flex',
                     alignItems: 'center',
@@ -1345,6 +1352,7 @@ function FeaturesSection({ m }: { m: MonitorsTr }) {
 ───────────────────────────────────────────────────────────────────────── */
 function CTASectionMonitors({ m }: { m: MonitorsTr }) {
   const isMobile = useIsMobile();
+  const { open } = useShopModal();
   return (
     <section
       style={{
@@ -1415,9 +1423,8 @@ function CTASectionMonitors({ m }: { m: MonitorsTr }) {
           }}
         >
           <motion.a
-            href="https://shop.bikon.uz"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="javascript:void(0)"
+            onClick={(e) => { e.preventDefault(); open('Bikon Vision Pro'); }}
             whileHover={{ scale: 1.04 }}
             whileTap={{ scale: 0.97 }}
             style={{

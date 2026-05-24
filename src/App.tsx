@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, useCallback } from 'react';
 import Lenis from 'lenis';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
@@ -8,17 +8,24 @@ import TrustSection from './components/TrustSection';
 import CTASection from './components/CTASection';
 import Footer from './components/Footer';
 import PageLoader from './components/PageLoader';
-import AboutPage from './components/AboutPage';
-import MonitorsPage from './components/MonitorsPage';
-import LaptopsPage from './components/LaptopsPage';
-import AiosPage from './components/AiosPage';
-import NovaPage from './components/NovaPage';
-import MatrixPage from './components/MatrixPage';
-import OptimaPage from './components/OptimaPage';
-import BlogPage from './components/BlogPage';
+
+const AboutPage        = lazy(() => import('./components/AboutPage'));
+const MonitorsPage     = lazy(() => import('./components/MonitorsPage'));
+const LaptopsPage      = lazy(() => import('./components/LaptopsPage'));
+const AiosPage         = lazy(() => import('./components/AiosPage'));
+const NovaPage         = lazy(() => import('./components/NovaPage'));
+const MatrixPage       = lazy(() => import('./components/MatrixPage'));
+const OptimaPage       = lazy(() => import('./components/OptimaPage'));
+const CasesPage        = lazy(() => import('./components/CasesPage'));
+const BlogPage         = lazy(() => import('./components/BlogPage'));
+const ServiceCenterPage = lazy(() => import('./components/ServiceCenterPage'));
+const CareersPage      = lazy(() => import('./components/CareersPage'));
+const HowToBuyPage     = lazy(() => import('./components/HowToBuyPage'));
+const B2BPage          = lazy(() => import('./components/B2BPage'));
 import { LenisContext } from './context/LenisContext';
 import { LanguageProvider, useLang } from './context/LanguageContext';
 import { RouterProvider, useRouter } from './context/RouterContext';
+import { ShopModalProvider } from './context/ShopModalContext';
 import { getProducts, mediaUrl, type StrapiProduct } from './lib/strapi';
 import {
   Monitor,
@@ -184,15 +191,25 @@ function HomePage() {
 function AppContent() {
   const { page } = useRouter();
 
-  if (page === '/about')    return <AboutPage />;
-  if (page === '/monitors') return <MonitorsPage />;
-  if (page === '/laptops')  return <LaptopsPage />;
-  if (page === '/aios')     return <AiosPage />;
-  if (page === '/nova')     return <NovaPage />;
-  if (page === '/matrix')   return <MatrixPage />;
-  if (page === '/optima')   return <OptimaPage />;
-  if (page === '/blog')     return <BlogPage />;
-  return <HomePage />;
+  if (page === '/') return <HomePage />;
+
+  return (
+    <Suspense fallback={<div style={{ background: '#000', minHeight: '100vh' }} />}>
+      {page === '/about'          && <AboutPage />}
+      {page === '/monitors'       && <MonitorsPage />}
+      {page === '/laptops'        && <LaptopsPage />}
+      {page === '/aios'           && <AiosPage />}
+      {page === '/nova'           && <NovaPage />}
+      {page === '/matrix'         && <MatrixPage />}
+      {page === '/optima'         && <OptimaPage />}
+      {page === '/cases'          && <CasesPage />}
+      {page === '/blog'           && <BlogPage />}
+      {page === '/service-center' && <ServiceCenterPage />}
+      {page === '/careers'        && <CareersPage />}
+      {page === '/how-to-buy'     && <HowToBuyPage />}
+      {page === '/b2b'            && <B2BPage />}
+    </Suspense>
+  );
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -202,7 +219,9 @@ export default function App() {
   return (
     <LanguageProvider>
       <RouterProvider>
-        <AppContent />
+        <ShopModalProvider>
+          <AppContent />
+        </ShopModalProvider>
       </RouterProvider>
     </LanguageProvider>
   );

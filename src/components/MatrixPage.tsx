@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { ShoppingCart, Wifi, Camera, Cable, Zap, RotateCw, Volume2, MapPin, Layers, Monitor, Bluetooth, Headphones, type LucideIcon } from 'lucide-react';
+import { ShoppingCart, Wifi, Camera, Cable, RotateCw, Volume2, MapPin, Layers, Bluetooth, type LucideIcon } from 'lucide-react';
 
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -8,6 +8,7 @@ import SplitHeading from './SplitHeading';
 import SpecsSection from './SpecsSection';
 import { FloatingPathsBackground } from './ui/floating-paths';
 import { useLang } from '../context/LanguageContext';
+import { useShopModal } from '../context/ShopModalContext';
 
 interface MatrixTr {
   hero_eyebrow: string;
@@ -103,27 +104,37 @@ export default function MatrixPage() {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
-   HeroSection — static image hero (no video for Matrix)
+   HeroSection — video background hero
 ───────────────────────────────────────────────────────────────────────── */
 function HeroSection({ l }: { l: MatrixTr }) {
   const isMobile = useIsMobile();
 
   return (
     <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', position: 'relative', overflow: 'hidden', background: '#000' }}>
-      <FloatingPathsBackground
-        position={1}
-        className="absolute inset-0 w-full h-full z-0"
-        pathClassName="opacity-60"
-      />
-      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', width: '100%', height: isMobile ? undefined : '100vh', position: 'relative', zIndex: 1 }}>
+      {/* Background video */}
+      <video
+        autoPlay muted loop playsInline
+        style={{
+          position: 'absolute', inset: 0, width: '100%', height: '100%',
+          objectFit: 'cover', zIndex: 0,
+        }}
+      >
+        <source src="/matrix/herobackground.mp4" type="video/mp4" />
+      </video>
+      {/* Dark overlay */}
+      <div aria-hidden style={{
+        position: 'absolute', inset: 0, zIndex: 1,
+        background: 'linear-gradient(135deg, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.45) 60%, rgba(0,0,0,0.3) 100%)',
+      }} />
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', width: '100%', height: isMobile ? undefined : '100vh', position: 'relative', zIndex: 2 }}>
         {/* Left: text */}
         <motion.div
           initial={{ opacity: 0, x: -32 }} animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
           style={{
-            flex: isMobile ? undefined : '0 0 45%',
+            flex: 1,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
-            padding: isMobile ? '100px 24px 40px' : '0 5% 0 10%',
+            padding: isMobile ? '100px 24px 40px' : '0 20% 0 10%',
           }}
         >
           <span style={{
@@ -163,35 +174,6 @@ function HeroSection({ l }: { l: MatrixTr }) {
           </div>
         </motion.div>
 
-        {/* Right: front.png */}
-        <motion.div
-          initial={{ opacity: 0, x: 32 }} animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          style={{
-            flex: isMobile ? undefined : '0 0 55%',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            padding: isMobile ? '0 24px 80px' : '0',
-            position: 'relative',
-          }}
-        >
-          <div aria-hidden style={{
-            position: 'absolute', inset: 0, pointerEvents: 'none',
-            background: 'radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,102,204,0.12) 0%, transparent 70%)',
-          }} />
-          <img
-            src="/matrix/front.png"
-            alt="Bikon Matrix"
-            draggable={false}
-            style={{
-              width: isMobile ? '90%' : '80%',
-              maxWidth: 600,
-              height: 'auto',
-              objectFit: 'contain',
-              filter: 'drop-shadow(0 40px 80px rgba(0,0,0,0.85))',
-              position: 'relative', zIndex: 1,
-            }}
-          />
-        </motion.div>
       </div>
     </section>
   );
@@ -233,7 +215,7 @@ function DisplaySection({ l }: { l: MatrixTr }) {
             src="/matrix/front.png" alt="Matrix Display" draggable={false}
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.9 }}
-            style={{ width: '100%', maxWidth: 340, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
+            style={{ width: '100%', maxWidth: 560, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
           />
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
@@ -251,14 +233,14 @@ function DisplaySection({ l }: { l: MatrixTr }) {
 
   return (
     <div ref={containerRef} style={{ height: '280vh', position: 'relative' }}>
-      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '0 10%' }}>
+      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '0 4%' }}>
         <FloatingPathsBackground position={-1} className="absolute inset-0 w-full h-full" pathClassName="opacity-60" />
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8%', width: '100%', position: 'relative', zIndex: 1 }}>
-          <div style={{ flex: '0 0 46%', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2%', width: '100%', position: 'relative', zIndex: 1 }}>
+          <div style={{ flex: '0 0 60%', display: 'flex', justifyContent: 'center' }}>
             <img
               src="/matrix/front.png" alt="Matrix Display" draggable={false}
               style={{
-                width: '100%', maxWidth: 620, height: 'auto', objectFit: 'contain',
+                width: '100%', maxWidth: 1000, height: 'auto', objectFit: 'contain',
                 filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))',
                 transform: `scale(${imageScale})`,
                 transition: 'transform 0.05s linear',
@@ -424,13 +406,13 @@ function CameraAndSoundSection({ l }: { l: MatrixTr }) {
 /* ─────────────────────────────────────────────────────────────────────────
    ConnectivitySection
 ───────────────────────────────────────────────────────────────────────── */
-const MATRIX_PORTS: { Icon: React.ElementType; label: string; spec: string }[] = [
-  { Icon: Monitor,    label: 'HDMI 2.0',  spec: 'Video Output'    },
-  { Icon: Cable,      label: 'USB-C',     spec: 'Data + Power'    },
-  { Icon: Cable,      label: 'USB-A ×3',  spec: 'USB 3.2 Gen 1'  },
-  { Icon: Headphones, label: '3.5mm',     spec: 'Audio Jack'      },
-  { Icon: Wifi,       label: 'Wi-Fi 6',   spec: '802.11ax'        },
-  { Icon: Bluetooth,  label: 'BT 5.0',    spec: 'Bluetooth'       },
+const MATRIX_PORTS: { Icon: React.ElementType | string; label: string; spec: string }[] = [
+  { Icon: '/icons/hdmi.png', label: 'HDMI 2.0',     spec: 'Video Output'    },
+  { Icon: '/icons/hdmi.png', label: 'DisplayPort',  spec: 'DP 1.4 Output'   },
+  { Icon: '/icons/usb.png',  label: 'USB-A ×4',    spec: 'USB 3.2 Gen 1'   },
+  { Icon: '/icons/aux.png',  label: '3.5mm',     spec: 'Audio Jack'      },
+  { Icon: Wifi,              label: 'Wi-Fi 6',   spec: '802.11ax'        },
+  { Icon: Bluetooth,         label: 'BT 5.0',    spec: 'Bluetooth'       },
 ];
 
 function ConnectivitySection({ l }: { l: MatrixTr }) {
@@ -467,7 +449,12 @@ function ConnectivitySection({ l }: { l: MatrixTr }) {
         viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'center', maxWidth: 860, position: 'relative', zIndex: 1 }}
       >
-        {MATRIX_PORTS.map(({ Icon, label, spec }, i) => (
+        {MATRIX_PORTS.map(({ Icon, label, spec }, i) => {
+          const IconEl = Icon as React.ElementType;
+          const iconContent = typeof Icon === 'string'
+            ? <img src={Icon} alt={label} style={{ width: 36, height: 36, objectFit: 'contain' as const }} />
+            : <IconEl size={28} color="#4da3ff" strokeWidth={1.7} />;
+          return (
           <motion.div
             key={label}
             initial={{ opacity: 0, scale: 0.94 }} whileInView={{ opacity: 1, scale: 1 }}
@@ -476,15 +463,16 @@ function ConnectivitySection({ l }: { l: MatrixTr }) {
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.07)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(77,163,255,0.22)'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.04)'; (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.07)'; }}
           >
-            <div style={{ width: 44, height: 44, borderRadius: 11, background: 'rgba(77,163,255,0.08)', border: '1px solid rgba(77,163,255,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Icon size={20} color="#4da3ff" strokeWidth={1.7} />
+            <div style={{ width: 60, height: 60, borderRadius: 14, background: 'rgba(77,163,255,0.08)', border: '1px solid rgba(77,163,255,0.16)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {iconContent}
             </div>
             <div style={{ textAlign: 'center' }}>
               <p style={{ fontSize: 13, fontWeight: 800, color: '#fff', letterSpacing: '-0.01em', margin: 0, marginBottom: 4 }}>{label}</p>
               <p style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.36)', letterSpacing: '0.06em', textTransform: 'uppercase' as const, margin: 0 }}>{spec}</p>
             </div>
           </motion.div>
-        ))}
+          );
+        })}
       </motion.div>
     </section>
   );
@@ -504,7 +492,7 @@ function BentoSection({ l }: { l: MatrixTr }) {
     { label: 'Wi-Fi 6',        Icon: Wifi     },
     { label: 'Full HD Webcam', Icon: Camera   },
     { label: 'HDMI 2.0',       Icon: Cable    },
-    { label: 'USB-C',          Icon: Zap      },
+    { label: 'DisplayPort',    Icon: Cable    },
   ];
   const SMALLS_2: { label: string; Icon: LucideIcon }[] = [
     { label: 'Portrait 90°',       Icon: RotateCw },
@@ -660,6 +648,7 @@ function AppsSection({ l }: { l: MatrixTr }) {
 ───────────────────────────────────────────────────────────────────────── */
 function LineupSection({ l }: { l: MatrixTr }) {
   const isMobile = useIsMobile();
+  const { open } = useShopModal();
   return (
     <section id="lineup" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', padding: isMobile ? '80px 16px' : '0 24px', position: 'relative', overflow: 'hidden' }}>
       <FloatingPathsBackground position={1} className="absolute inset-0 w-full h-full" pathClassName="opacity-60" />
@@ -680,7 +669,7 @@ function LineupSection({ l }: { l: MatrixTr }) {
         >
           <div style={{ padding: '52px 40px 28px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280, position: 'relative' }}>
             <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 70% at 50% 60%, rgba(0,102,204,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-            <img src="/matrix/front.png" alt={l.lineup_name} draggable={false} style={{ width: '80%', maxWidth: 320, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.9))', position: 'relative', zIndex: 1 }} />
+            <img src="/matrix/front.png" alt={l.lineup_name} draggable={false} style={{ width: '90%', maxWidth: 460, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.9))', position: 'relative', zIndex: 1 }} />
           </div>
           <div style={{ padding: '24px 32px 36px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>
@@ -693,7 +682,7 @@ function LineupSection({ l }: { l: MatrixTr }) {
                 <span key={spec} style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.6)', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 10px', letterSpacing: '0.04em' }}>{spec}</span>
               ))}
             </div>
-            <a href="https://shop.bikon.uz" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#0066CC', color: '#fff', padding: '12px 24px', borderRadius: 11, fontSize: 13, fontWeight: 700, textDecoration: 'none', letterSpacing: '-0.01em' }}>
+            <a href="javascript:void(0)" onClick={(e: React.MouseEvent) => { e.preventDefault(); open('Bikon Matrix AiO'); }} style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#0066CC', color: '#fff', padding: '12px 24px', borderRadius: 11, fontSize: 13, fontWeight: 700, textDecoration: 'none', letterSpacing: '-0.01em' }}>
               <ShoppingCart size={14} strokeWidth={2.5} />
               {l.lineup_learn}
             </a>
@@ -709,6 +698,7 @@ function LineupSection({ l }: { l: MatrixTr }) {
 ───────────────────────────────────────────────────────────────────────── */
 function CTASection({ l }: { l: MatrixTr }) {
   const isMobile = useIsMobile();
+  const { open } = useShopModal();
   return (
     <section style={{ background: '#030303', padding: isMobile ? '88px 24px' : '130px 24px', position: 'relative', overflow: 'hidden' }}>
       <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 65% 75% at 50% 50%, rgba(0,102,204,0.11) 0%, transparent 70%)' }} />
@@ -724,7 +714,7 @@ function CTASection({ l }: { l: MatrixTr }) {
           viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.25 }}
           style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}
         >
-          <motion.a href="https://shop.bikon.uz" target="_blank" rel="noopener noreferrer" whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
+          <motion.a href="javascript:void(0)" onClick={(e: React.MouseEvent) => { e.preventDefault(); open('Bikon Matrix AiO'); }} whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: '#000', padding: '14px 30px', borderRadius: 13, fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', letterSpacing: '-0.01em' }}
           >
             <ShoppingCart size={15} strokeWidth={2.5} />

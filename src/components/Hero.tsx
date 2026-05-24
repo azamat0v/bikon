@@ -180,7 +180,7 @@ export default function Hero() {
             {/* Ghost */}
             <motion.button
               onClick={() => {
-                const el = document.getElementById('monitorlar');
+                const el = document.getElementById('kategoriyalar');
                 el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }}
               whileHover={{ scale: 1.03 }}
@@ -269,9 +269,9 @@ export default function Hero() {
 
           {/* 3-D Tilt container */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 30 }}
+            initial={{ opacity: 0, scale: 0.96, y: 16 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0 }}
             style={{
               rotateX,
               rotateY,
@@ -308,6 +308,8 @@ export default function Hero() {
               <motion.img
                 src="/main.png"
                 alt="Bikon quality devices — laptop, monitor and PC"
+                loading="eager"
+                fetchPriority="high"
                 animate={{ y: [0, -10, 0] }}
                 transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
                 draggable={false}

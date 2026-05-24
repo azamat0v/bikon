@@ -379,7 +379,7 @@ function ModelNavigationSection({ l }: { l: AiosTr }) {
             <div style={{
               padding: '44px 32px 24px',
               display: 'flex', justifyContent: 'center', alignItems: 'center',
-              minHeight: 240, position: 'relative',
+              minHeight: 320, position: 'relative',
             }}>
               <div aria-hidden style={{
                 position: 'absolute', inset: 0, pointerEvents: 'none',
@@ -387,7 +387,7 @@ function ModelNavigationSection({ l }: { l: AiosTr }) {
               }} />
               <img
                 src={img} alt={name} draggable={false}
-                style={{ width: '75%', maxWidth: 240, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.9))', position: 'relative', zIndex: 1 }}
+                style={{ width: '100%', maxWidth: 520, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.9))', position: 'relative', zIndex: 1 }}
               />
             </div>
 

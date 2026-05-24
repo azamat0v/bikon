@@ -1,6 +1,6 @@
 import { motion, useMotionValue, useSpring, useTransform, animate } from 'motion/react';
 import { useEffect, useRef } from 'react';
-import { ArrowRight, Star } from 'lucide-react';
+import { Download, Star } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
 
 export default function CTASection() {
@@ -157,9 +157,8 @@ export default function CTASection() {
                 style={{ display: 'flex', alignItems: 'center', gap: 16 }}
               >
                 <motion.a
-                  href="https://shop.bikon.uz"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/Bikon.pdf"
+                  download
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   transition={{ type: 'spring', stiffness: 400, damping: 22 }}
@@ -178,26 +177,10 @@ export default function CTASection() {
                     boxShadow: '0 0 0 1px rgba(255,255,255,0.1), 0 8px 32px rgba(0,0,0,0.4)',
                   }}
                 >
-                  {c.shop_now}
-                  <ArrowRight size={15} strokeWidth={2.5} />
+                  <Download size={15} strokeWidth={2.5} />
+                  {c.download_catalog}
                 </motion.a>
 
-                <a
-                  href="https://shop.bikon.uz"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: 'rgba(255,255,255,0.40)',
-                    textDecoration: 'none',
-                    transition: 'color 0.2s',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.40)')}
-                >
-                  {c.view_all}
-                </a>
               </motion.div>
             </motion.div>
 
@@ -227,7 +210,7 @@ export default function CTASection() {
 
               <img
                 ref={imgRef}
-                src="/bestseller.png"
+                src="/katalog.png"
                 alt="Bikon Bestseller"
                 loading="lazy"
                 decoding="async"
@@ -235,8 +218,8 @@ export default function CTASection() {
                 style={{
                   position: 'relative',
                   zIndex: 1,
-                  width: '100%',
-                  maxWidth: 580,
+                  width: '130%',
+                  maxWidth: 1200,
                   height: 'auto',
                   objectFit: 'contain',
                   filter: 'drop-shadow(0 32px 64px rgba(59,130,246,0.25)) drop-shadow(0 8px 24px rgba(0,0,0,0.55))',

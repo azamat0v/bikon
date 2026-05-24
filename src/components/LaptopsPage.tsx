@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ChevronDown, ChevronUp, ShoppingCart } from 'lucide-react';
+import { ChevronDown, ChevronUp, ShoppingCart, Wifi, Camera, Cable, MapPin, Bluetooth, Fingerprint, type LucideIcon } from 'lucide-react';
 
 import Navbar from './Navbar';
 import Footer from './Footer';
 import SplitHeading from './SplitHeading';
 import SpecsSection from './SpecsSection';
 import { useLang } from '../context/LanguageContext';
+import { useShopModal } from '../context/ShopModalContext';
 
 /* ─────────────────────────────────────────────────────────────────────────
    Types
@@ -44,6 +45,15 @@ interface LaptopsTr {
   cta_body: string;
   cta_shop: string;
   cta_catalog: string;
+  showcase_eyebrow: string;
+  showcase_title: string;
+  showcase_body: string;
+  image_subtitle: string;
+  image_feat1: string;
+  image_feat2: string;
+  image_feat3: string;
+  bento_eyebrow: string;
+  bento_title: string;
 }
 
 function useIsMobile(bp = 768) {
@@ -77,7 +87,10 @@ export default function LaptopsPage() {
         <Navbar />
         <HeroSection l={l} />
         <BuiltDifferentSection l={l} />
+        <ImageSection l={l} />
+        <BentoSection l={l} />
         <FeaturesSection l={l} />
+        <ShowcaseSection l={l} />
         <ModelLineupSection l={l} />
         <SpecsSection
           eyebrow={l.specs_eyebrow}
@@ -141,7 +154,7 @@ function HeroSection({ l }: { l: LaptopsTr }) {
     if (!ctx) return;
     ctx.scale(dpr, dpr);
     ctxRef.current = ctx;
-    ctx.fillStyle = '#050505';
+    ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, rect.width, rect.height);
     drawFrame(curIdxRef.current);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -170,7 +183,7 @@ function HeroSection({ l }: { l: LaptopsTr }) {
     const scale = Math.min(cssW / img.naturalWidth, cssH / img.naturalHeight) * 0.82;
     const drawW = img.naturalWidth  * scale;
     const drawH = img.naturalHeight * scale;
-    ctx.fillStyle = '#050505';
+    ctx.fillStyle = '#000';
     ctx.fillRect(0, 0, cssW, cssH);
     ctx.drawImage(img, (cssW - drawW) / 2, (cssH - drawH) / 2, drawW, drawH);
     curIdxRef.current = idx;
@@ -260,7 +273,7 @@ function HeroSection({ l }: { l: LaptopsTr }) {
 
   return (
     <div ref={containerRef} style={{ height: '300vh', position: 'relative' }}>
-      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#050505' }}>
+      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', background: '#000' }}>
 
         {/* Ambient glow */}
         <div aria-hidden style={{
@@ -312,7 +325,7 @@ function HeroSection({ l }: { l: LaptopsTr }) {
               style={{
                 position: 'absolute', inset: 0, zIndex: 20,
                 display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
-                background: '#050505',
+                background: '#000',
               }}
             >
               <div style={{
@@ -720,73 +733,71 @@ function FeaturePill({
   const isActive = i === active;
   return (
     <div>
-      <motion.button
-        onClick={() => onSelect(i)}
-        whileTap={{ scale: 0.97 }}
-        style={{
-          display: 'flex', alignItems: 'center', gap: 14,
-          padding: '12px 22px 12px 12px',
-          borderRadius: 100, width: '100%',
-          background: isActive ? 'rgba(80,80,86,0.92)' : 'rgba(38,38,42,0.80)',
-          backdropFilter: 'blur(30px) saturate(180%)',
-          WebkitBackdropFilter: 'blur(30px) saturate(180%)',
-          border: `1px solid ${isActive ? 'rgba(255,255,255,0.32)' : 'rgba(255,255,255,0.11)'}`,
-          boxShadow: isActive
-            ? '0 2px 24px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.18)'
-            : '0 1px 4px rgba(0,0,0,0.4)',
-          cursor: 'pointer', textAlign: 'left' as const,
-          transition: 'background 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease',
-        }}
-      >
-        <div style={{
-          width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
-          background: isActive ? 'rgba(255,255,255,0.20)' : 'rgba(255,255,255,0.07)',
-          border: `1.5px solid ${isActive ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.20)'}`,
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transition: 'background 0.22s ease, border-color 0.22s ease',
-        }}>
-          {isActive
-            ? <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#fff' }} />
-            : <span style={{ fontSize: 20, fontWeight: 300, color: 'rgba(255,255,255,0.65)', lineHeight: 1, marginTop: -1 }}>+</span>
-          }
-        </div>
-        <span style={{
-          fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em',
-          color: isActive ? '#fff' : 'rgba(255,255,255,0.72)',
-          transition: 'color 0.22s ease',
-        }}>{f.label}</span>
-      </motion.button>
-
-      <AnimatePresence initial={false}>
-        {isActive && (
+      <AnimatePresence mode="popLayout" initial={false}>
+        {isActive ? (
+          /* Active: only description text, no pill */
           <motion.div
             key="desc"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.34, ease: [0.16, 1, 0.3, 1] }}
-            style={{ overflow: 'hidden' }}
+            initial={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: -8, filter: 'blur(6px)' }}
+            transition={{ duration: 0.55, ease: [0.25, 1, 0.3, 1] }}
+            style={{
+              padding: '14px 18px 16px',
+              borderRadius: 18,
+              background: 'rgba(20,20,24,0.45)',
+              backdropFilter: 'blur(24px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+            }}
+          >
+            <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.70)', lineHeight: 1.75, margin: 0 }}>
+              <strong style={{ color: '#f5f5f7', fontWeight: 700 }}>{f.label}.</strong>{' '}{f.desc}
+            </p>
+          </motion.div>
+        ) : (
+          /* Inactive: pill button */
+          <motion.button
+            key="pill"
+            onClick={() => onSelect(i)}
+            whileTap={{ scale: 0.97 }}
+            initial={{ opacity: 0, y: -8, filter: 'blur(6px)' }}
+            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            exit={{ opacity: 0, y: 12, filter: 'blur(6px)' }}
+            transition={{ duration: 0.55, ease: [0.25, 1, 0.3, 1] }}
+            style={{
+              display: 'flex', alignItems: 'center', gap: 14,
+              padding: '12px 22px 12px 12px',
+              borderRadius: 100, width: '100%',
+              background: 'rgba(20,20,22,0.45)',
+              backdropFilter: 'blur(24px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+              border: 'none',
+              cursor: 'pointer', textAlign: 'left' as const,
+            }}
           >
             <div style={{
-              margin: '6px 0 4px',
-              padding: '18px 22px 20px',
-              borderRadius: 18,
-              background: 'rgba(20,20,24,0.94)',
-              backdropFilter: 'blur(36px) saturate(180%)',
-              WebkitBackdropFilter: 'blur(36px) saturate(180%)',
-              border: '1px solid rgba(255,255,255,0.10)',
-              boxShadow: '0 6px 32px rgba(0,0,0,0.65)',
+              width: 32, height: 32, borderRadius: '50%', flexShrink: 0,
+              background: 'rgba(255,255,255,0.07)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.70)', lineHeight: 1.75, margin: 0 }}>
-                <strong style={{ color: '#f5f5f7', fontWeight: 700 }}>{f.label}.</strong>{' '}{f.desc}
-              </p>
+              <span style={{ fontSize: 20, fontWeight: 300, color: 'rgba(255,255,255,0.65)', lineHeight: 1, marginTop: -1 }}>+</span>
             </div>
-          </motion.div>
+            <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em', color: 'rgba(255,255,255,0.72)' }}>
+              {f.label}
+            </span>
+          </motion.button>
         )}
       </AnimatePresence>
     </div>
   );
 }
+
+const FEATURE_IMGS = [
+  '/laptops/future1.png',
+  '/laptops/future2.png',
+  '/laptops/future3.png',
+  '/laptops/future4.png',
+];
 
 function FeaturesSection({ l }: { l: LaptopsTr }) {
   const [active, setActive] = useState(0);
@@ -796,50 +807,91 @@ function FeaturesSection({ l }: { l: LaptopsTr }) {
   return (
     <section id="features" style={{ background: '#000', overflow: 'hidden' }}>
       {isMobile ? (
-        /* ── Mobile ── */
-        <div>
-          <div style={{ padding: '52px 24px 32px' }}>
-            <span style={{
-              fontSize: 11, fontWeight: 800, letterSpacing: '0.2em',
-              textTransform: 'uppercase' as const, color: '#0066CC',
-              display: 'block', marginBottom: 16,
-            }}>{l.features_eyebrow}</span>
-            <SplitHeading
-              text={l.features_title}
-              style={{ fontSize: 'clamp(32px, 9vw, 52px)', fontWeight: 900, color: '#f5f5f7', letterSpacing: '-0.045em', lineHeight: 1.06 }}
+        /* ── Mobile: full-screen image + overlaid pills ── */
+        <div style={{ position: 'relative', height: '100vh', minHeight: 600 }}>
+          {/* Full-screen image */}
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={active}
+              src={FEATURE_IMGS[active]}
+              alt={l.features[active]?.label ?? 'Bikon Laptop'}
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.45 }}
+              draggable={false}
+              style={{
+                position: 'absolute', inset: 0, width: '100%', height: '100%',
+                objectFit: 'contain',
+              }}
             />
-          </div>
-          <div style={{ position: 'relative', width: '100%', height: '56vw', minHeight: 200, overflow: 'hidden' }}>
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={active}
-                src="/laptop.png"
-                alt={l.features[active]?.label ?? 'Bikon Laptop'}
-                initial={{ opacity: 0, scale: 1.06 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
-                draggable={false}
-                style={{
-                  position: 'absolute', inset: 0, width: '100%', height: '100%',
-                  objectFit: 'contain', padding: '4%',
-                  filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.8))',
-                }}
+          </AnimatePresence>
+
+          {/* Bottom gradient */}
+          <div aria-hidden style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: '60%',
+            background: 'linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.6) 55%, transparent 100%)',
+            pointerEvents: 'none', zIndex: 1,
+          }} />
+
+          {/* Eyebrow + title top */}
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, padding: '40px 24px 0', zIndex: 2 }}>
+            <div style={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%)', padding: '24px 0 32px' }}>
+              <span style={{
+                fontSize: 11, fontWeight: 800, letterSpacing: '0.2em',
+                textTransform: 'uppercase' as const, color: '#0066CC',
+                display: 'block', marginBottom: 10,
+              }}>{l.features_eyebrow}</span>
+              <SplitHeading
+                text={l.features_title}
+                style={{ fontSize: 'clamp(28px, 8vw, 44px)', fontWeight: 900, color: '#f5f5f7', letterSpacing: '-0.045em', lineHeight: 1.06 }}
               />
-            </AnimatePresence>
+            </div>
           </div>
-          <div style={{ padding: '24px 20px 60px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+
+          {/* Pills bottom */}
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 2,
+            padding: '0 20px 32px',
+            display: 'flex', flexDirection: 'column', gap: 8,
+          }}>
             {l.features.map((f, i) => (
               <FeaturePill key={i} f={f} i={i} active={active} onSelect={setActive} />
             ))}
           </div>
         </div>
       ) : (
-        /* ── Desktop: side-by-side split ── */
-        <div style={{ display: 'flex', height: '100vh', minHeight: 640, maxHeight: 900 }}>
+        /* ── Desktop: full-screen image + left overlay panel ── */
+        <div style={{ position: 'relative', height: '100vh', minHeight: 640, overflow: 'hidden' }}>
 
-          {/* LEFT: nav arrows + heading + pills */}
-          <div style={{ width: 420, flexShrink: 0, background: '#000', display: 'flex', alignItems: 'stretch' }}>
+          {/* Full-screen image */}
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={active}
+              src={FEATURE_IMGS[active]}
+              alt={l.features[active]?.label ?? 'Bikon Laptop'}
+              initial={{ opacity: 0, scale: 1.03 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              draggable={false}
+              style={{
+                position: 'absolute', inset: 0, width: '100%', height: '100%',
+                objectFit: 'contain', userSelect: 'none',
+              }}
+            />
+          </AnimatePresence>
+
+          {/* Left gradient overlay */}
+          <div aria-hidden style={{
+            position: 'absolute', inset: 0, pointerEvents: 'none',
+            background: 'linear-gradient(to right, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.75) 30%, rgba(0,0,0,0.2) 60%, transparent 100%)',
+          }} />
+
+          {/* Left panel: arrows + heading + pills */}
+          <div style={{
+            position: 'absolute', top: 0, left: 0, bottom: 0,
+            width: 420, display: 'flex', alignItems: 'stretch',
+          }}>
+            {/* Arrow column */}
             <div style={{
               width: 68, flexShrink: 0,
               display: 'flex', flexDirection: 'column',
@@ -864,6 +916,7 @@ function FeaturesSection({ l }: { l: LaptopsTr }) {
               ))}
             </div>
 
+            {/* Heading + pills */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '40px 32px 40px 24px' }}>
               <div style={{ marginBottom: 32 }}>
                 <span style={{
@@ -884,39 +937,66 @@ function FeaturesSection({ l }: { l: LaptopsTr }) {
             </div>
           </div>
 
-          {/* RIGHT: static laptop image */}
-          <div style={{ flex: 1, position: 'relative', background: '#060608', overflow: 'hidden' }}>
-            <div aria-hidden style={{
-              position: 'absolute', inset: 0, pointerEvents: 'none',
-              background: 'radial-gradient(ellipse 70% 65% at 52% 50%, rgba(0,80,220,0.13) 0%, transparent 62%)',
-            }} />
-            <AnimatePresence mode="wait">
-              <motion.img
-                key={active}
-                src="/laptop.png"
-                alt={l.features[active]?.label ?? 'Bikon Laptop'}
-                initial={{ opacity: 0, scale: 1.04 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                draggable={false}
-                style={{
-                  position: 'absolute', inset: 0, width: '100%', height: '100%',
-                  objectFit: 'contain', padding: '8% 10%',
-                  filter: 'drop-shadow(0 48px 96px rgba(0,0,0,0.9))',
-                  userSelect: 'none',
-                }}
-              />
-            </AnimatePresence>
-            <div aria-hidden style={{
-              position: 'absolute', top: 0, left: 0, bottom: 0, width: 56,
-              pointerEvents: 'none',
-              background: 'linear-gradient(to right, #060608, transparent)',
-            }} />
-          </div>
-
         </div>
       )}
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ShowcaseSection — full-bleed showcase image before model lineup
+───────────────────────────────────────────────────────────────────────── */
+function ShowcaseSection({ l }: { l: LaptopsTr }) {
+  const isMobile = useIsMobile();
+
+  return (
+    <section style={{
+      position: 'relative',
+      minHeight: isMobile ? '70vw' : '80vh',
+      display: 'flex', alignItems: 'flex-end',
+    }}>
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden' }}>
+        <img
+          src="/laptops/showcase.png"
+          alt="Bikon Laptops Showcase"
+          draggable={false}
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+        />
+      </div>
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 1,
+        background: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.35) 70%, transparent 100%)',
+      }} />
+      <div style={{
+        position: 'relative', zIndex: 2,
+        padding: isMobile ? '40px 24px 56px' : '100px 10%',
+        maxWidth: 720,
+      }}>
+        <motion.span
+          initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '0px' }} transition={{ duration: 0.6 }}
+          style={{
+            fontSize: 11, fontWeight: 800, letterSpacing: '0.22em',
+            textTransform: 'uppercase' as const, color: '#4da3ff',
+            display: 'block', marginBottom: 16,
+          }}
+        >{l.showcase_eyebrow}</motion.span>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '0px' }}
+          transition={{ duration: 0.8, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            fontSize: isMobile ? 'clamp(36px,11vw,60px)' : 'clamp(44px,6vw,80px)',
+            fontWeight: 900, letterSpacing: '-0.055em', lineHeight: 1.06,
+            color: '#fff', marginBottom: 20, whiteSpace: 'pre-line',
+          }}
+        >{l.showcase_title}</motion.h2>
+        <motion.p
+          initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '0px' }} transition={{ duration: 0.7, delay: 0.2 }}
+          style={{ fontSize: isMobile ? 14 : 17, color: 'rgba(255,255,255,0.5)', lineHeight: 1.75, maxWidth: 480 }}
+        >{l.showcase_body}</motion.p>
+      </div>
     </section>
   );
 }
@@ -926,22 +1006,23 @@ function FeaturesSection({ l }: { l: LaptopsTr }) {
 ───────────────────────────────────────────────────────────────────────── */
 function ModelLineupSection({ l }: { l: LaptopsTr }) {
   const isMobile = useIsMobile();
+  const { open } = useShopModal();
   const models = [
     {
       name:  l.lineup_smartbook_name,
       tag:   l.lineup_smartbook_tag,
       desc:  l.lineup_smartbook_desc,
-      image: '/laptop.png',
-      specs: ['15.6" IPS', 'Intel Celeron', '8GB / 256GB', 'Windows 11'],
+      image: '/laptops/smartbook.png',
+      specs: ['15.6" FHD IPS', 'Celeron N5095', '8GB / 256GB', 'Fingerprint'],
       badge: null as string | null,
     },
     {
       name:  l.lineup_workbook_name,
       tag:   l.lineup_workbook_tag,
       desc:  l.lineup_workbook_desc,
-      image: '/laptop.png',
-      specs: ['15.6" IPS', 'Intel Core i5/i7', '16GB / 512GB NVMe', 'Win 11 Pro'],
-      badge: l.lineup_badge_pro,
+      image: '/laptops/workbook.png',
+      specs: ['15.6" FHD IPS', 'Celeron N4000', '8GB / 256GB', 'Win 10 Pro'],
+      badge: null as string | null,
     },
   ];
 
@@ -1018,9 +1099,8 @@ function ModelLineupSection({ l }: { l: LaptopsTr }) {
                   ))}
                 </div>
                 <a
-                  href="https://shop.bikon.uz"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="javascript:void(0)"
+                  onClick={(e) => { e.preventDefault(); open(model.name); }}
                   style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: '#000', padding: '13px 26px', borderRadius: 12, fontSize: 13, fontWeight: 700, textDecoration: 'none', letterSpacing: '-0.01em', alignSelf: 'flex-start', transition: 'opacity 0.2s' }}
                   onMouseEnter={e => (e.currentTarget.style.opacity = '0.88')}
                   onMouseLeave={e => (e.currentTarget.style.opacity = '1')}
@@ -1038,10 +1118,246 @@ function ModelLineupSection({ l }: { l: LaptopsTr }) {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────
+   ImageSection — split: display photo left, IPS info panel right
+───────────────────────────────────────────────────────────────────────── */
+function ImageSection({ l }: { l: LaptopsTr }) {
+  const isMobile = useIsMobile();
+
+  const feats = [
+    { icon: '/icons/wideview.png',    label: l.image_feat1 },
+    { icon: '/icons/vividcolors.png', label: l.image_feat2 },
+    { icon: '/icons/ips.png',         label: l.image_feat3 },
+  ];
+
+  return (
+    <section style={{
+      display: 'flex',
+      flexDirection: isMobile ? 'column' : 'row',
+      minHeight: isMobile ? 'auto' : '70vh',
+      background: '#000',
+      overflow: 'hidden',
+    }}>
+      {/* Left: laptop display photo */}
+      <div style={{
+        flex: isMobile ? 'none' : '1 1 55%',
+        position: 'relative',
+        minHeight: isMobile ? '60vw' : '70vh',
+        overflow: 'hidden',
+      }}>
+        <img
+          src="/laptops/display.png"
+          alt="Bikon Laptop Display"
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+        />
+        {!isMobile && (
+          <div aria-hidden style={{
+            position: 'absolute', top: 0, right: 0, bottom: 0, width: 100,
+            background: 'linear-gradient(to right, transparent, #000)',
+            zIndex: 1, pointerEvents: 'none',
+          }} />
+        )}
+        {isMobile && (
+          <div aria-hidden style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: 80,
+            background: 'linear-gradient(to top, #000, transparent)',
+            zIndex: 1, pointerEvents: 'none',
+          }} />
+        )}
+      </div>
+
+      {/* Right: IPS info panel */}
+      <div style={{
+        flex: isMobile ? 'none' : '0 0 45%',
+        background: '#000',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: isMobile ? '40px 28px 56px' : '60px 6% 60px 2%',
+      }}>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ width: '100%', maxWidth: 400 }}
+        >
+          {/* Heading: "IPS DISPLAY" */}
+          <div style={{ marginBottom: isMobile ? 10 : 14, lineHeight: 1, whiteSpace: 'nowrap' }}>
+            <span style={{
+              fontSize: isMobile ? 'clamp(44px,13vw,68px)' : 'clamp(48px,5.5vw,76px)',
+              fontWeight: 900, letterSpacing: '-0.02em',
+              background: 'linear-gradient(135deg, #f472b6 0%, #a855f7 45%, #60a5fa 100%)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text',
+              marginRight: '0.22em',
+            }}>IPS</span>
+            <span style={{
+              fontSize: isMobile ? 'clamp(44px,13vw,68px)' : 'clamp(48px,5.5vw,76px)',
+              fontWeight: 900, letterSpacing: '-0.02em', color: '#fff',
+            }}>DISPLAY</span>
+          </div>
+
+          {/* Subtitle */}
+          <p style={{
+            fontSize: isMobile ? 12 : 14,
+            fontWeight: 700,
+            letterSpacing: '0.14em',
+            color: 'rgba(255,255,255,0.4)',
+            textTransform: 'uppercase' as const,
+            marginBottom: isMobile ? 36 : 52,
+            margin: `0 0 ${isMobile ? 36 : 52}px`,
+          }}>{l.image_subtitle}</p>
+
+          {/* Three feature icons */}
+          <div style={{ display: 'flex', gap: isMobile ? 12 : 20 }}>
+            {feats.map(({ icon, label }, i) => (
+              <motion.div
+                key={label}
+                initial={{ opacity: 0, y: 16 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.15 + i * 0.1, ease: [0.16, 1, 0.3, 1] }}
+                style={{ flex: '1 1 0', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}
+              >
+                <div style={{
+                  width: '100%', aspectRatio: '1 / 1',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <img src={icon} alt={label} draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                </div>
+                <span style={{
+                  fontSize: isMobile ? 9 : 10, fontWeight: 800, letterSpacing: '0.1em',
+                  color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase' as const,
+                  textAlign: 'center', lineHeight: 1.45,
+                }}>{label}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   BentoSection — Key features grid
+───────────────────────────────────────────────────────────────────────── */
+function BentoSection({ l }: { l: LaptopsTr }) {
+  const isMobile = useIsMobile();
+  const card: React.CSSProperties = { background: '#0c0c0f', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, overflow: 'hidden', position: 'relative' };
+  const gt = (g: string): React.CSSProperties => ({ background: g, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' });
+  const gc = (desk: string, mob: string) => isMobile ? mob : desk;
+
+  const SMALLS: { label: string; Icon: LucideIcon }[] = [
+    { label: 'Wi-Fi 5/6',          Icon: Wifi        },
+    { label: 'FHD Webcam',         Icon: Camera      },
+    { label: 'Bluetooth 5.0',      Icon: Bluetooth   },
+    { label: 'HDMI 1.4',           Icon: Cable       },
+    { label: 'Fingerprint ID',     Icon: Fingerprint },
+    { label: 'Made in Uzbekistan', Icon: MapPin      },
+  ];
+
+  return (
+    <section style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: isMobile ? '60px 16px' : '60px 40px' }}>
+      <motion.div initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }} style={{ textAlign: 'center', marginBottom: 28 }}>
+        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: '#4da3ff' }}>{l.bento_eyebrow}</span>
+      </motion.div>
+      <motion.div
+        initial={{ opacity: 0, y: 28 }} whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }} transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(6, 1fr)' : 'repeat(12, 1fr)', gap: 8, maxWidth: 1100, margin: '0 auto', width: '100%' }}
+      >
+        {/* Title bar */}
+        <div style={{ ...card, gridColumn: gc('1 / 13', '1 / 7'), padding: '20px 28px', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.016) 2px, rgba(255,255,255,0.016) 4px)' }}>
+          <span style={{ fontSize: isMobile ? 13 : 17, fontWeight: 900, letterSpacing: '0.18em', color: '#fff', textTransform: 'uppercase' as const, textAlign: 'center' }}>{l.bento_title}</span>
+        </div>
+
+        {/* Large stat cards */}
+        <div style={{ ...card, gridColumn: gc('1 / 5', '1 / 7'), padding: '22px 24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minHeight: 96 }}>
+          <span style={{ ...gt('linear-gradient(135deg,#60a5fa,#93c5fd)'), fontSize: isMobile ? 20 : 24, fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase' as const, lineHeight: 1.1 }}>15.6" FHD IPS</span>
+          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', color: 'rgba(255,255,255,0.36)', marginTop: 8, textTransform: 'uppercase' as const }}>FULL HD 1920×1080 DISPLAY</span>
+        </div>
+        <div style={{ ...card, gridColumn: gc('5 / 9', '1 / 7'), padding: '22px 24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minHeight: 96 }}>
+          <span style={{ ...gt('linear-gradient(135deg,#c084fc,#818cf8)'), fontSize: isMobile ? 20 : 24, fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase' as const, lineHeight: 1.1 }}>8 GB DDR4</span>
+          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', color: 'rgba(255,255,255,0.36)', marginTop: 8, textTransform: 'uppercase' as const }}>DUAL-CHANNEL RAM</span>
+        </div>
+        <div style={{ ...card, gridColumn: gc('9 / 13', '1 / 7'), padding: '22px 24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', minHeight: 96 }}>
+          <span style={{ ...gt('linear-gradient(135deg,#34d399,#60d4fa)'), fontSize: isMobile ? 20 : 24, fontWeight: 900, letterSpacing: '0.05em', textTransform: 'uppercase' as const, lineHeight: 1.1 }}>256 GB SSD</span>
+          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.16em', color: 'rgba(255,255,255,0.36)', marginTop: 8, textTransform: 'uppercase' as const }}>NVMe HIGH-SPEED STORAGE</span>
+        </div>
+
+        {/* Number highlight cards */}
+        <div style={{ ...card, gridColumn: gc('1 / 5', '1 / 3'), padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center', minHeight: 120 }}>
+          <span style={{ fontSize: isMobile ? 22 : 34, fontWeight: 900, color: '#fff', letterSpacing: '-0.04em', lineHeight: 1 }}>N5095</span>
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.12em', color: '#4da3ff', marginTop: 8, textTransform: 'uppercase' as const }}>SMARTBOOK CPU</span>
+        </div>
+        <div style={{ ...card, gridColumn: gc('5 / 9', '3 / 5'), padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: 120, background: 'linear-gradient(160deg, #0a1628 0%, #0c0c0f 65%)', position: 'relative' }}>
+          <div aria-hidden style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: 'radial-gradient(ellipse 80% 70% at 50% 60%, rgba(0,100,220,0.2) 0%, transparent 70%)' }} />
+          <span style={{ fontSize: isMobile ? 34 : 54, fontWeight: 900, color: '#fff', letterSpacing: '-0.05em', lineHeight: 1, position: 'relative', zIndex: 1 }}>256 GB</span>
+          <span style={{ fontSize: 10, fontWeight: 800, letterSpacing: '0.14em', color: 'rgba(255,255,255,0.36)', marginTop: 6, textTransform: 'uppercase' as const, position: 'relative', zIndex: 1 }}>NVMe SSD</span>
+        </div>
+        <div style={{ ...card, gridColumn: gc('9 / 13', '5 / 7'), padding: '24px', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center', minHeight: 120, textAlign: 'right' }}>
+          <span style={{ fontSize: isMobile ? 22 : 34, fontWeight: 900, color: '#fff', letterSpacing: '-0.04em', lineHeight: 1 }}>N4000</span>
+          <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.36)', marginTop: 8, textTransform: 'uppercase' as const }}>WORKBOOK CPU</span>
+        </div>
+
+        {/* Feature cards */}
+        <div style={{ ...card, gridColumn: gc('1 / 5', '1 / 7'), padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16, minHeight: 86 }}>
+          <div style={{ width: 42, height: 42, borderRadius: 10, flexShrink: 0, background: 'rgba(148,163,184,0.1)', border: '1px solid rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.65)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8m-4-4v4"/>
+            </svg>
+          </div>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', color: '#fff', textTransform: 'uppercase' as const, margin: 0, marginBottom: 3 }}>PLASTIC CHASSIS</p>
+            <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.32)', textTransform: 'uppercase' as const, margin: 0 }}>LIGHTWEIGHT DESIGN</p>
+          </div>
+        </div>
+        <div style={{ ...card, gridColumn: gc('5 / 9', '1 / 7'), padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16, minHeight: 86 }}>
+          <div style={{ width: 42, height: 42, borderRadius: 10, flexShrink: 0, overflow: 'hidden' }}>
+            <svg viewBox="0 0 88 88" xmlns="http://www.w3.org/2000/svg" width="42" height="42">
+              <rect width="88" height="88" fill="#0078D4"/>
+              <rect x="6" y="6" width="35" height="35" fill="white"/>
+              <rect x="47" y="6" width="35" height="35" fill="white"/>
+              <rect x="6" y="47" width="35" height="35" fill="white"/>
+              <rect x="47" y="47" width="35" height="35" fill="white"/>
+            </svg>
+          </div>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', color: '#fff', textTransform: 'uppercase' as const, margin: 0, marginBottom: 3 }}>WINDOWS 10 PRO</p>
+            <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.32)', textTransform: 'uppercase' as const, margin: 0 }}>PRE-INSTALLED & ACTIVATED</p>
+          </div>
+        </div>
+        <div style={{ ...card, gridColumn: gc('9 / 13', '1 / 7'), padding: '18px 22px', display: 'flex', alignItems: 'center', gap: 16, minHeight: 86 }}>
+          <div style={{ width: 42, height: 42, borderRadius: 10, flexShrink: 0, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <div>
+            <p style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.1em', color: '#fff', textTransform: 'uppercase' as const, margin: 0, marginBottom: 3 }}>12-MONTH WARRANTY</p>
+            <p style={{ fontSize: 10, fontWeight: 600, letterSpacing: '0.08em', color: 'rgba(255,255,255,0.32)', textTransform: 'uppercase' as const, margin: 0 }}>FULL COVERAGE</p>
+          </div>
+        </div>
+
+        {/* Small connectivity chips */}
+        {SMALLS.map(({ label, Icon }, i) => {
+          const deskCols = ['1/5','5/9','9/13','1/5','5/9','9/13'];
+          const mobCols  = ['1/4','4/7','1/4','4/7','1/4','4/7'];
+          return (
+            <div key={label} style={{ ...card, gridColumn: gc(deskCols[i], mobCols[i]), padding: '14px 10px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 7, minHeight: 70 }}>
+              <Icon size={16} strokeWidth={1.8} color="rgba(255,255,255,0.45)" />
+              <span style={{ fontSize: isMobile ? 9 : 11, fontWeight: 700, letterSpacing: '0.07em', color: 'rgba(255,255,255,0.65)', textTransform: 'uppercase' as const, textAlign: 'center', lineHeight: 1.3 }}>{label}</span>
+            </div>
+          );
+        })}
+      </motion.div>
+    </section>
+  );
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
    CTASectionLaptops
 ───────────────────────────────────────────────────────────────────────── */
 function CTASectionLaptops({ l }: { l: LaptopsTr }) {
   const isMobile = useIsMobile();
+  const { open } = useShopModal();
   return (
     <section style={{ background: '#030303', padding: isMobile ? '88px 24px' : '130px 24px', position: 'relative', overflow: 'hidden' }}>
       <div aria-hidden style={{
@@ -1064,7 +1380,7 @@ function CTASectionLaptops({ l }: { l: LaptopsTr }) {
           style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}
         >
           <motion.a
-            href="https://shop.bikon.uz" target="_blank" rel="noopener noreferrer"
+            href="javascript:void(0)" onClick={(e) => { e.preventDefault(); open('Bikon Smartbook'); }}
             whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.97 }}
             style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#fff', color: '#000', padding: '14px 30px', borderRadius: 13, fontSize: 13, fontWeight: 700, textDecoration: 'none', boxShadow: '0 8px 32px rgba(0,0,0,0.5)', letterSpacing: '-0.01em' }}
           >
