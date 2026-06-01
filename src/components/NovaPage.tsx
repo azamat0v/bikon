@@ -145,6 +145,21 @@ function HeroSection({ l }: { l: NovaTr }) {
     const video = videoRef.current;
     if (!video) return;
 
+    let unlocked = false;
+
+    // iOS blocks currentTime until the user has interacted and play() was called.
+    // Unlock on the very first scroll or touch event.
+    const unlock = () => {
+      if (unlocked) return;
+      unlocked = true;
+      video.play().then(() => {
+        video.pause();
+        video.currentTime = 0;
+      }).catch(() => {});
+    };
+    window.addEventListener('scroll', unlock, { once: true, passive: true });
+    window.addEventListener('touchstart', unlock, { once: true, passive: true });
+
     const tick = () => {
       const el = containerRef.current;
       if (el && video.readyState >= 2 && video.duration > 0) {
@@ -152,8 +167,6 @@ function HeroSection({ l }: { l: NovaTr }) {
         const max = el.offsetHeight - window.innerHeight;
         if (max > 0) {
           const p = Math.max(0, Math.min(1, scrolled / max));
-          // Pause to prevent autoplay advancing; set time directly.
-          // On iOS this works because autoPlay has already unlocked seeking.
           if (!video.paused) video.pause();
           video.currentTime = p * video.duration;
         }
@@ -162,7 +175,11 @@ function HeroSection({ l }: { l: NovaTr }) {
     };
 
     scrollRafRef.current = requestAnimationFrame(tick);
-    return () => { cancelAnimationFrame(scrollRafRef.current); };
+    return () => {
+      cancelAnimationFrame(scrollRafRef.current);
+      window.removeEventListener('scroll', unlock);
+      window.removeEventListener('touchstart', unlock);
+    };
   }, [videoReady]);
 
   return (
@@ -181,7 +198,6 @@ function HeroSection({ l }: { l: NovaTr }) {
               ref={videoRef}
               src="/nova/hero.mp4"
               muted
-              autoPlay
               playsInline
               preload="auto"
               onLoadedMetadata={() => setVideoReady(true)}
