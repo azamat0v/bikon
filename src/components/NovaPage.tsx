@@ -141,10 +141,11 @@ function HeroSection({ l }: { l: NovaTr }) {
   const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
-    // Mobile (Safari): currentTime scrubbing unreliable — video plays in loop instead.
-    if (isMobile || !videoReady) return;
+    // Mobile: autoPlay loop handles animation, no scroll seeking needed.
+    if (isMobile) return;
+    if (!videoReady) return;
     const video = videoRef.current;
-    if (!video || video.duration === 0) return;
+    if (!video) return;
 
     const tick = () => {
       const el = containerRef.current;
@@ -271,7 +272,7 @@ function HeroSection({ l }: { l: NovaTr }) {
                 muted
                 playsInline
                 preload="auto"
-                onLoadedMetadata={() => setVideoReady(true)}
+                onCanPlay={() => setVideoReady(true)}
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center 35%', display: 'block' }}
               />
             </div>
