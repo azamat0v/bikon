@@ -145,52 +145,24 @@ function HeroSection({ l }: { l: NovaTr }) {
     const video = videoRef.current;
     if (!video) return;
 
-    let isSeeking = false;
-    let pendingTime: number | null = null;
-    let seekTimer: ReturnType<typeof setTimeout> | null = null;
-
-    const doSeek = (t: number) => {
-      if (isSeeking) { pendingTime = t; return; }
-      if (Math.abs(video.currentTime - t) < 0.016) return; // ~1 frame threshold
-      isSeeking = true;
-      pendingTime = null;
-      // Safety timeout: if 'seeked' never fires (buffering / browser throttle),
-      // unstick after 250 ms so the animation doesn't freeze.
-      if (seekTimer) clearTimeout(seekTimer);
-      seekTimer = setTimeout(() => {
-        isSeeking = false;
-        if (pendingTime !== null) { const pt = pendingTime; pendingTime = null; doSeek(pt); }
-      }, 250);
-      video.currentTime = t;
-    };
-
-    const onSeeked = () => {
-      if (seekTimer) { clearTimeout(seekTimer); seekTimer = null; }
-      isSeeking = false;
-      if (pendingTime !== null) { const pt = pendingTime; pendingTime = null; doSeek(pt); }
-    };
-
-    video.addEventListener('seeked', onSeeked);
-
     const tick = () => {
       const el = containerRef.current;
-      if (el && video.duration) {
+      if (el && video.readyState >= 2 && video.duration > 0) {
         const scrolled = -el.getBoundingClientRect().top;
         const max = el.offsetHeight - window.innerHeight;
         if (max > 0) {
           const p = Math.max(0, Math.min(1, scrolled / max));
-          doSeek(p * video.duration);
+          // Pause to prevent autoplay advancing; set time directly.
+          // On iOS this works because autoPlay has already unlocked seeking.
+          if (!video.paused) video.pause();
+          video.currentTime = p * video.duration;
         }
       }
       scrollRafRef.current = requestAnimationFrame(tick);
     };
 
     scrollRafRef.current = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(scrollRafRef.current);
-      if (seekTimer) clearTimeout(seekTimer);
-      video.removeEventListener('seeked', onSeeked);
-    };
+    return () => { cancelAnimationFrame(scrollRafRef.current); };
   }, [videoReady]);
 
   return (
@@ -209,6 +181,7 @@ function HeroSection({ l }: { l: NovaTr }) {
               ref={videoRef}
               src="/nova/hero.mp4"
               muted
+              autoPlay
               playsInline
               preload="auto"
               onLoadedMetadata={() => setVideoReady(true)}
