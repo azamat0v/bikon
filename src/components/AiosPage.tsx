@@ -1,3 +1,4 @@
+import { useSeo } from '../lib/useSeo';
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { ChevronDown } from 'lucide-react';
@@ -74,6 +75,12 @@ export default function AiosPage() {
     models_nova_tag:    cms?.models?.[2]?.tag         ?? base.models_nova_tag,
     models_nova_desc:   cms?.models?.[2]?.description ?? base.models_nova_desc,
   };
+
+  useSeo({
+    title: "Matrix va Optima AiO — Monoblock taqqoslash | Bikon",
+    description: "Bikon Matrix va Optima monoblocklarini solishtiring. 24\" va 27\" ekranli, Intel protsessorli hamyonbop all-in-one kompyuterlar.",
+    url: 'https://bikon.uz/aios',
+  });
 
   return (
     <div className="bg-white min-h-screen" style={{ overflowX: 'clip' }}>

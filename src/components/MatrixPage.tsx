@@ -1,3 +1,4 @@
+import { useSeo } from '../lib/useSeo';
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { ShoppingCart, Wifi, Camera, Cable, RotateCw, Volume2, MapPin, Layers, Bluetooth, type LucideIcon } from 'lucide-react';
@@ -90,6 +91,12 @@ export default function MatrixPage() {
     specs_label:        cms?.specs_label   ?? base.specs_label,
     specs_categories:   cmsSpecs           ?? base.specs_categories,
   };
+
+  useSeo({
+    title: "Matrix AiO — O'zbekistonning hamyonbop monoblocki | Bikon",
+    description: "Bikon Matrix — 24\" yoki 27\" IPS ekranli, Intel 12-14th Gen all-in-one monoblock.",
+    url: 'https://bikon.uz/matrix',
+  });
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>

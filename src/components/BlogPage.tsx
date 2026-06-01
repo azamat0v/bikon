@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSeo } from '../lib/useSeo';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowUpRight, RefreshCw, ArrowLeft, Clock, Calendar } from 'lucide-react';
 
@@ -63,36 +64,6 @@ function useArticles(lang: string) {
   return { articles, loading, error, retry: load };
 }
 
-/* ─────────────────────────────────────────────────────────────────────────
-   SEO helper — sets <title> and <meta> tags dynamically
-───────────────────────────────────────────────────────────────────────── */
-function setMeta(name: string, content: string, isProperty = false) {
-  const attr = isProperty ? 'property' : 'name';
-  let el = document.querySelector(`meta[${attr}="${name}"]`) as HTMLMetaElement | null;
-  if (!el) {
-    el = document.createElement('meta');
-    el.setAttribute(attr, name);
-    document.head.appendChild(el);
-  }
-  el.content = content;
-}
-
-function applyArticleSeo(article: StrapiArticle) {
-  document.title = `${article.title} — Bikon Blog`;
-  setMeta('description', article.excerpt);
-  setMeta('og:title',       article.title,   true);
-  setMeta('og:description', article.excerpt, true);
-  setMeta('og:type',        'article',        true);
-  setMeta('og:url',         `https://bikon.uz/blog/${article.slug}`, true);
-  const img = mediaUrl(article.cover?.url);
-  if (img) setMeta('og:image', img, true);
-}
-
-function resetSeo() {
-  document.title = 'Bikon — Advanced Technology';
-  setMeta('description', 'Bikon — O\'zbekiston bozorida ilg\'or kompyuter texnikasi ishlab chiqaruvchisi.');
-  setMeta('og:type', 'website', true);
-}
 
 /* ─────────────────────────────────────────────────────────────────────────
    Root
@@ -108,28 +79,16 @@ export default function BlogPage() {
 
   /* ── Sync URL slug → selected article ── */
   useEffect(() => {
-    if (!blogSlug) {
-      setSelected(null);
-      resetSeo();
-      return;
-    }
-    /* Try from already-loaded list first */
+    if (!blogSlug) { setSelected(null); return; }
     const inList = articles.find(a => a.slug === blogSlug);
     if (inList) {
       setSelected(inList);
-      applyArticleSeo(inList);
     } else if (!loading) {
-      /* Direct URL access — fetch by slug */
       getArticleBySlug(blogSlug, lang)
-        .then(a => {
-          if (a) { setSelected(a); applyArticleSeo(a); }
-        })
-        .catch(() => {/* silently ignore */});
+        .then(a => { if (a) setSelected(a); })
+        .catch(() => {});
     }
   }, [blogSlug, articles, loading, lang]);
-
-  /* ── Reset SEO on unmount ── */
-  useEffect(() => () => { resetSeo(); }, []);
 
   const openArticle = (article: StrapiArticle) => {
     navigate(`/blog/${article.slug}`);
@@ -145,6 +104,13 @@ export default function BlogPage() {
   const featured = articles.find(a => a.featured);
   const rest     = filtered.filter(a => !a.featured);
   const showFeatured = catIdx === 0 && !!featured;
+
+  const seoTitle = selected ? `${selected.title} — Bikon Blog` : "Blog & Insights — Bikon";
+  const seoDesc  = selected?.excerpt ?? "Bikon texnologiya yangiliklari, mahsulot qo'llanmalari va foydali maslahatlar.";
+  const seoUrl   = selected ? `https://bikon.uz/blog/${selected.slug}` : 'https://bikon.uz/blog';
+  const seoImage = selected?.cover?.url ? mediaUrl(selected.cover.url) : undefined;
+
+  useSeo({ title: seoTitle, description: seoDesc, url: seoUrl, image: seoImage, type: selected ? 'article' : 'website' });
 
   const sharedStyles = (
     <style>{`
@@ -584,7 +550,7 @@ function HeroSection({
         }} />
       ))}
 
-      <div style={{ position: 'relative', zIndex: 1, maxWidth: 780, margin: '0 auto', padding: '0 24px', textAlign: 'center' }}>
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: 780, margin: '0 auto', padding: '0 24px', textAlign: 'center', width: '100%', boxSizing: 'border-box' as const }}>
         <motion.span
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -617,7 +583,7 @@ function HeroSection({
         <motion.div
           initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25 }}
-          style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}
+          style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: '100%' }}
         >
           {l.categories.map((cat, i) => {
             const isActive = i === catIdx;

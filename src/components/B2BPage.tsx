@@ -84,10 +84,10 @@ export default function B2BPage() {
           <SplitHeading
             text={b2b.title}
             style={{
-              fontSize: 'clamp(56px, 10vw, 112px)',
+              fontSize: 'clamp(36px, 10vw, 112px)',
               fontWeight: 300,
               letterSpacing: '-0.04em',
-              lineHeight: 1,
+              lineHeight: 1.05,
               color: '#1D1D1F',
             }}
           />

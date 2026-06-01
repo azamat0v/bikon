@@ -1,3 +1,4 @@
+import { useSeo } from '../lib/useSeo';
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { ShoppingCart, Wifi, Camera, Cable, RotateCw, Volume2, MapPin, Layers, Bluetooth, type LucideIcon } from 'lucide-react';
@@ -94,6 +95,12 @@ export default function NovaPage() {
     specs_label:        cms?.specs_label   ?? base.specs_label,
     specs_categories:   cmsSpecs           ?? base.specs_categories,
   };
+
+  useSeo({
+    title: "NOVA All-in-One — Zamonaviy ish joyi uchun monoblock | Bikon",
+    description: "NOVA — 27\" QHD IPS ekranli, Intel 14th Gen hamyonbop all-in-one monoblock. B2B va B2C yetkazib berish.",
+    url: 'https://bikon.uz/nova',
+  });
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>

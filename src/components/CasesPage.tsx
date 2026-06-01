@@ -1,3 +1,4 @@
+import { useSeo } from '../lib/useSeo';
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import Navbar from './Navbar';
@@ -76,6 +77,12 @@ export default function CasesPage() {
     specs_label:       cms?.specs_label   ?? base.specs_label,
     specs_categories:  cmsSpecs           ?? base.specs_categories,
   };
+
+  useSeo({
+    title: "PHANTOM PC Korpuslar — Gaming va ofis uchun | Bikon",
+    description: "Bikon PHANTOM — shisha panel va RGB yorug'lik bilan hamyonbop PC korpuslar.",
+    url: 'https://bikon.uz/cases',
+  });
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>

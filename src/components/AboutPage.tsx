@@ -1,3 +1,4 @@
+import { useSeo } from '../lib/useSeo';
 import { useEffect, useRef, type RefObject } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -100,6 +101,12 @@ export default function AboutPage() {
     ...(cms?.final_quote && { final_quote:       cms.final_quote }),
     ...(cms?.founder_image && { founder_image:   mediaUrl(cms.founder_image.url) }),
   };
+
+  useSeo({
+    title: "Bikon haqida — 2015-yildan Toshkentda | Bikon",
+    description: "Bikon — 2015-yildan Toshkentda kompyuter texnikasi ishlab chiqaradi. O'zbekiston B2B, B2G, B2C bozorida hamyonbop texnologiya.",
+    url: 'https://bikon.uz/about',
+  });
 
   /* hero */
   const heroRef      = useRef<HTMLDivElement>(null);

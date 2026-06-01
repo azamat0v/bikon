@@ -1,3 +1,4 @@
+import { useSeo } from '../lib/useSeo';
 import { useRef, useEffect, useState } from 'react';
 import {
   motion,
@@ -102,6 +103,12 @@ export default function MonitorsPage() {
     specs_vision_label: cms?.specs_label   ?? base.specs_vision_label,
     specs_categories:   cmsSpecs           ?? base.specs_categories,
   };
+
+  useSeo({
+    title: "VISION PRO Monitorlar — O'zbekiston monitorlari | Bikon",
+    description: "Bikon VISION PRO — 24\" va 27\" IPS monitorlar. Aniq tasvir va qulay narx bilan ofis uchun.",
+    url: 'https://bikon.uz/monitors',
+  });
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>

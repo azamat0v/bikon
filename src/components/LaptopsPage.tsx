@@ -1,3 +1,4 @@
+import { useSeo } from '../lib/useSeo';
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronDown, ChevronUp, ShoppingCart, Wifi, Camera, Cable, MapPin, Bluetooth, Fingerprint, type LucideIcon } from 'lucide-react';
@@ -95,6 +96,12 @@ export default function LaptopsPage() {
     specs_title:     cms?.specs_title   ?? base.specs_title,
     specs_categories: cmsSpecs          ?? base.specs_categories,
   };
+
+  useSeo({
+    title: "SMARTBOOK Noutbuklar — O'zbekiston noutbuklari | Bikon",
+    description: "Bikon SMARTBOOK — mahalliy ishlab chiqarilgan hamyonbop noutbuklar. Talabalar va biznes uchun.",
+    url: 'https://bikon.uz/laptops',
+  });
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>

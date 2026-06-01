@@ -1,3 +1,4 @@
+import { useSeo } from '../lib/useSeo';
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { ShoppingCart, Wifi, Camera, Cable, Zap, RotateCw, Volume2, MapPin, Layers, Bluetooth, type LucideIcon } from 'lucide-react';
@@ -90,6 +91,12 @@ export default function OptimaPage() {
     specs_label:        cms?.specs_label   ?? base.specs_label,
     specs_categories:   cmsSpecs           ?? base.specs_categories,
   };
+
+  useSeo({
+    title: "Optima AiO — Arzon va ishonchli monoblock | Bikon",
+    description: "Bikon Optima — hamyonbop all-in-one monoblock. 24\" Full HD yoki 27\" QHD, ofis uchun qulay.",
+    url: 'https://bikon.uz/optima',
+  });
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>
