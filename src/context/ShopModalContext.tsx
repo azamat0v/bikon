@@ -33,8 +33,8 @@ interface ShopModalTr {
 
 type Step = 'main' | 'telegram' | 'success' | 'error';
 
-const TG_TOKEN = '8713033309:AAGYWE99sTRdPxr9iOsbA8rmgqxPjbEb7xE';
-const TG_CHAT  = '-1003949797911';
+const TG_TOKEN = import.meta.env.VITE_TG_TOKEN as string;
+const TG_CHAT  = import.meta.env.VITE_TG_CHAT as string;
 
 export function ShopModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen]       = useState(false);

@@ -26,8 +26,8 @@ interface B2BTr {
   products: string[];
 }
 
-const TG_TOKEN = '8713033309:AAGYWE99sTRdPxr9iOsbA8rmgqxPjbEb7xE';
-const TG_CHAT  = '-1003949797911';
+const TG_TOKEN = import.meta.env.VITE_TG_TOKEN as string;
+const TG_CHAT  = import.meta.env.VITE_TG_CHAT as string;
 
 type Step = 'form' | 'success' | 'error';
 
