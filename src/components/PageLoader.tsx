@@ -69,8 +69,10 @@ export default function PageLoader({ onDone }: PageLoaderProps) {
 
       setTimeout(() => {
         if (!overlayRef.current || !logoRef.current) {
-          // Fallback if refs not ready
+          doneRef.current = true;
+          sessionStorage.setItem(SESSION_KEY, '1');
           setVisible(false);
+          onDone();
           return;
         }
 
