@@ -228,41 +228,16 @@ function DisplaySection({ l }: { l: MatrixTr }) {
   const ease = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
   const imageScale = 1 + ease * 0.13;
 
-  if (isMobile) {
-    return (
-      <section style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', padding: '80px 24px', position: 'relative', overflow: 'hidden' }}>
-        <FloatingPathsBackground position={-1} className="absolute inset-0 w-full h-full" pathClassName="opacity-60" />
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 40, position: 'relative', zIndex: 1, width: '100%' }}>
-          <motion.img
-            src="/matrix/front.png" alt="Matrix Display" draggable={false}
-            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.9 }}
-            style={{ width: '100%', maxWidth: 760, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
-          />
-          <motion.div
-            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }} transition={{ duration: 0.8, delay: 0.1 }}
-            style={{ textAlign: 'center' }}
-          >
-            <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: '#4da3ff', display: 'block', marginBottom: 16 }}>{l.display_eyebrow}</span>
-            <h2 style={{ fontSize: 'clamp(30px, 9vw, 48px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1.06, color: '#fff', whiteSpace: 'pre-line', marginBottom: 18 }}>{l.display_title}</h2>
-            <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.48)', lineHeight: 1.75 }}>{l.display_body}</p>
-          </motion.div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <div ref={containerRef} style={{ height: '280vh', position: 'relative' }}>
-      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '0 4%' }}>
+    <div ref={containerRef} style={{ height: isMobile ? '220vh' : '280vh', position: 'relative' }}>
+      <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: isMobile ? '0' : '0 4%' }}>
         <FloatingPathsBackground position={-1} className="absolute inset-0 w-full h-full" pathClassName="opacity-60" />
-        <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2%', width: '100%', position: 'relative', zIndex: 1 }}>
-          <div style={{ flex: '0 0 68%', display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', alignItems: 'center', gap: isMobile ? 0 : '2%', width: '100%', height: isMobile ? '100%' : undefined, position: 'relative', zIndex: 1, padding: isMobile ? '40px 24px 24px' : undefined, boxSizing: 'border-box' }}>
+          <div style={{ flex: isMobile ? '1 1 auto' : '0 0 68%', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 0, width: '100%' }}>
             <img
               src="/matrix/front.png" alt="Matrix Display" draggable={false}
               style={{
-                width: '100%', maxWidth: 1200, height: 'auto', objectFit: 'contain',
+                width: '100%', maxWidth: isMobile ? 480 : 1200, height: 'auto', objectFit: 'contain',
                 filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))',
                 transform: `scale(${imageScale})`,
                 transition: 'transform 0.05s linear',
@@ -270,7 +245,7 @@ function DisplaySection({ l }: { l: MatrixTr }) {
               }}
             />
           </div>
-          <div style={{ flex: 1, position: 'relative' }}>
+          <div style={{ flex: isMobile ? '0 0 auto' : 1, position: 'relative', textAlign: isMobile ? 'center' : 'left', width: isMobile ? '100%' : undefined }}>
             <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.22em', textTransform: 'uppercase' as const, color: '#4da3ff', display: 'block', marginBottom: 18 }}>
               {l.display_eyebrow}
             </span>
