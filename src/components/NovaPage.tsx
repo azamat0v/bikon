@@ -140,20 +140,9 @@ function HeroSection({ l }: { l: NovaTr }) {
   const isMobile     = useIsMobile();
   const [videoReady, setVideoReady] = useState(false);
 
-  // Unlock seeking immediately when video is ready.
-  // muted+playsInline allows play() without user gesture on iOS.
-  const handleCanPlay = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.play().then(() => {
-      video.pause();
-      video.currentTime = 0;
-      setVideoReady(true);
-    }).catch(() => setVideoReady(true));
-  };
-
   useEffect(() => {
-    if (!videoReady) return;
+    // Mobile (Safari): currentTime scrubbing unreliable — video plays in loop instead.
+    if (isMobile || !videoReady) return;
     const video = videoRef.current;
     if (!video || video.duration === 0) return;
 
@@ -172,7 +161,7 @@ function HeroSection({ l }: { l: NovaTr }) {
 
     scrollRafRef.current = requestAnimationFrame(tick);
     return () => { cancelAnimationFrame(scrollRafRef.current); };
-  }, [videoReady]);
+  }, [videoReady, isMobile]);
 
   return (
     <div ref={containerRef} style={{ height: isMobile ? '250vh' : '320vh', position: 'relative' }}>
@@ -190,9 +179,10 @@ function HeroSection({ l }: { l: NovaTr }) {
               ref={videoRef}
               src="/nova/hero.mp4"
               muted
+              autoPlay
+              loop
               playsInline
               preload="auto"
-              onCanPlay={handleCanPlay}
               style={{ flex: 1, width: '100%', minHeight: 0, objectFit: 'contain', display: 'block' }}
             />
             {/* Text below */}
@@ -281,7 +271,7 @@ function HeroSection({ l }: { l: NovaTr }) {
                 muted
                 playsInline
                 preload="auto"
-                onCanPlay={handleCanPlay}
+                onLoadedMetadata={() => setVideoReady(true)}
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center 35%', display: 'block' }}
               />
             </div>
