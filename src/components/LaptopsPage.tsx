@@ -452,46 +452,45 @@ function BuiltDifferentSection({ l }: { l: LaptopsTr }) {
       style={{ background: '#000', position: 'relative', height: isMobile ? 'auto' : '300vh' }}
     >
       {isMobile ? (
-        /* ── Mobile: static layout ── */
+        /* ── Mobile: animated layout ── */
         <div style={{ padding: '80px 20px' }}>
-          <div style={{ marginBottom: 40 }}>
-            <span style={{
-              fontSize: 11, fontWeight: 800, letterSpacing: '0.2em',
-              textTransform: 'uppercase' as const, color: '#0066CC',
-              display: 'block', marginBottom: 16,
-            }}>{l.built_eyebrow}</span>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            style={{ marginBottom: 40 }}
+          >
+            <motion.span
+              initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }} transition={{ duration: 0.5 }}
+              style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: '#0066CC', display: 'block', marginBottom: 16 }}
+            >{l.built_eyebrow}</motion.span>
             <h2 style={{
               fontSize: 'clamp(36px, 9vw, 60px)', fontWeight: 900,
               letterSpacing: '-0.05em', lineHeight: 1.04, color: '#fff', marginBottom: 18,
             }}>{l.built_title}</h2>
-            <p style={{
-              fontSize: 16, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, marginBottom: 32,
-            }}>{l.built_body}</p>
+            <p style={{ fontSize: 16, color: 'rgba(255,255,255,0.45)', lineHeight: 1.75, marginBottom: 32 }}>{l.built_body}</p>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-              {l.built_stats.map(stat => (
-                <div key={stat.label} style={{
-                  padding: '12px 18px', borderRadius: 12, textAlign: 'center',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  background: 'rgba(255,255,255,0.06)',
-                }}>
+              {l.built_stats.map((stat, i) => (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, y: 14 }} whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.08 }}
+                  style={{ padding: '12px 18px', borderRadius: 12, textAlign: 'center', border: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.06)' }}
+                >
                   <div style={{ fontSize: 22, fontWeight: 900, color: '#fff', letterSpacing: '-0.03em' }}>{stat.value}</div>
                   <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.38)', letterSpacing: '0.1em', textTransform: 'uppercase', marginTop: 4 }}>{stat.label}</div>
-                </div>
+                </motion.div>
               ))}
             </div>
-          </div>
-          <div style={{ position: 'relative' }}>
-            <div aria-hidden style={{
-              position: 'absolute', inset: 0,
-              background: 'radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,102,204,0.13) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }} />
-            <img src="/laptop.png" alt="Bikon Laptop" draggable={false} style={{
-              width: '100%', height: 'auto', display: 'block',
-              filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.7))',
-              position: 'relative', zIndex: 1,
-            }} />
-          </div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.92, y: 20 }} whileInView={{ opacity: 1, scale: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+            style={{ position: 'relative' }}
+          >
+            <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 65% 65% at 50% 50%, rgba(0,102,204,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+            <img src="/laptop.png" alt="Bikon Laptop" draggable={false} style={{ width: '100%', height: 'auto', display: 'block', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.7))', position: 'relative', zIndex: 1 }} />
+          </motion.div>
         </div>
       ) : (
         /* ── Desktop: sticky split + scroll canvas ── */
