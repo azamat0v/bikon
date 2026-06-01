@@ -5,6 +5,8 @@ import { Factory, Users, TrendingUp, Boxes, Wrench } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import { useLang } from '../context/LanguageContext';
+import { useAboutPageCms } from '../lib/useProductPageCms';
+import { mediaUrl } from '../lib/strapi';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -79,7 +81,25 @@ const CURVE_PATH =
 ═══════════════════════════════════════════════════════════════════════════ */
 export default function AboutPage() {
   const { tr, lang } = useLang();
-  const ab = tr.about as any;
+  const base = tr.about as any;
+  const cms = useAboutPageCms();
+
+  const cmsStats = cms?.stats as { number: string; label: string }[] | null;
+  const ab = {
+    ...base,
+    ...(cms?.hero_eyebrow  && { badge:       cms.hero_eyebrow }),
+    ...(cms?.hero_subtitle && { hero_sub:    cms.hero_subtitle }),
+    ...(cms?.story_eyebrow && { story_label: cms.story_eyebrow }),
+    ...(cms?.story_title   && { story_title: cms.story_title }),
+    ...(cms?.story_body    && { story_body:  cms.story_body }),
+    ...(cmsStats?.[0] && { stat1_n: cmsStats[0].number, stat1_label: cmsStats[0].label }),
+    ...(cmsStats?.[1] && { stat2_n: cmsStats[1].number, stat2_label: cmsStats[1].label }),
+    ...(cmsStats?.[2] && { stat3_n: cmsStats[2].number, stat3_label: cmsStats[2].label }),
+    ...(cms?.values    && { values:              cms.values }),
+    ...(cms?.milestones && { history_milestones: cms.milestones }),
+    ...(cms?.final_quote && { final_quote:       cms.final_quote }),
+    ...(cms?.founder_image && { founder_image:   mediaUrl(cms.founder_image.url) }),
+  };
 
   /* hero */
   const heroRef      = useRef<HTMLDivElement>(null);
@@ -91,7 +111,6 @@ export default function AboutPage() {
   const founderRef = useRef<HTMLElement>(null);
   const historyRef = useRef<HTMLElement>(null);
   const revenueRef = useRef<HTMLElement>(null);
-  const marketRef  = useRef<HTMLElement>(null);
   const whatRef    = useRef<HTMLElement>(null);
   const whyRef    = useRef<HTMLElement>(null);
   const valuesRef = useRef<HTMLElement>(null);
@@ -141,8 +160,6 @@ export default function AboutPage() {
     }
   }, []);
 
-  /* ── Market Strategy ── */
-  useFadeUp(marketRef as RefObject<HTMLElement>, { duration: 1.0 });
 
   /* ── What We Do cards stagger ── */
   useEffect(() => {
@@ -612,15 +629,17 @@ export default function AboutPage() {
               <div style={{ display: 'flex', height: 36, alignItems: 'flex-end', marginBottom: 10 }}>
                 {REVENUE_DATA.map(d => (
                   <div key={d.year} style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
-                    <span style={{
-                      display: 'inline-block',
-                      fontSize: 11, fontWeight: 700,
-                      padding: '3px 10px', borderRadius: 999,
-                      letterSpacing: '-0.01em',
-                      background: d.final ? 'rgba(0,122,255,0.07)' : 'rgba(22,163,74,0.07)',
-                      color: d.final ? '#007AFF' : '#16a34a',
-                      border: `1px solid ${d.final ? 'rgba(0,122,255,0.18)' : 'rgba(22,163,74,0.18)'}`,
-                    }}>{d.growth}</span>
+                    {!d.final && (
+                      <span style={{
+                        display: 'inline-block',
+                        fontSize: 11, fontWeight: 700,
+                        padding: '3px 10px', borderRadius: 999,
+                        letterSpacing: '-0.01em',
+                        background: 'rgba(22,163,74,0.07)',
+                        color: '#16a34a',
+                        border: '1px solid rgba(22,163,74,0.18)',
+                      }}>{d.growth}</span>
+                    )}
                   </div>
                 ))}
               </div>
@@ -699,10 +718,11 @@ export default function AboutPage() {
                           boxShadow: '0 8px 24px -6px rgba(0,122,255,0.35)',
                         }}
                       >
-                        <span style={{ fontSize: 10, fontWeight: 700, color: '#fff', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.01em', whiteSpace: 'nowrap', opacity: 0.9 }}>
-                          {d.usd}
-                        </span>
-                        <span style={{ fontSize: 8, fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>USD</span>
+                        {!d.final && (
+                          <span style={{ fontSize: 13, fontWeight: 800, color: '#fff', textAlign: 'center', lineHeight: 1.3, letterSpacing: '-0.01em', whiteSpace: 'nowrap' }}>
+                            {d.growth}
+                          </span>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -781,109 +801,6 @@ export default function AboutPage() {
             ))}
           </div>
 
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════════════════
-          MARKET STRATEGY
-      ══════════════════════════════════════════════════════════════════ */}
-      <section
-        ref={marketRef as RefObject<HTMLElement>}
-        className="py-24 px-6"
-        style={{ background: '#fff', opacity: 0 }}
-      >
-        <div className="max-w-6xl mx-auto">
-
-          {/* Header */}
-          <div style={{ marginBottom: 56 }}>
-            <div className="accent-label mb-5">{ab.market_label}</div>
-            <h2 style={{
-              fontSize: 'clamp(28px, 3.5vw, 44px)', fontWeight: 700,
-              letterSpacing: '-0.04em', lineHeight: 1.1, color: '#111',
-              maxWidth: '18ch',
-            }}>
-              {ab.market_title}
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-14 items-center">
-
-            {/* LEFT — stat cards */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-
-              {/* Uzbekistan Market */}
-              <div style={{
-                borderRadius: 22, padding: '28px 30px',
-                border: '1px solid rgba(0,122,255,0.15)',
-                background: 'rgba(0,122,255,0.03)',
-              }}>
-                <h3 style={{ fontSize: 19, fontWeight: 700, color: '#007AFF', letterSpacing: '-0.03em', marginBottom: 20 }}>
-                  {ab.market_uz_title}
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
-                  {(ab.market_uz_items as { label: string; value: string }[]).map(({ label, value }) => (
-                    <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
-                      <span style={{ fontSize: 14, color: '#6E6E73', lineHeight: 1.5 }}>{label}</span>
-                      <span style={{ fontSize: 15, fontWeight: 700, color: '#111', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>{value}</span>
-                    </div>
-                  ))}
-                  <p style={{
-                    fontSize: 13, color: '#999', lineHeight: 1.7,
-                    marginTop: 6, paddingTop: 14,
-                    borderTop: '1px solid rgba(0,0,0,0.06)', margin: '6px 0 0',
-                  }}>
-                    {ab.market_uz_note}
-                    <span style={{ display: 'block', marginTop: 4, color: '#bbb', fontSize: 11 }}>
-                      {ab.market_uz_source}
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-              {/* BIKON Current Status */}
-              <div style={{ borderRadius: 22, padding: '28px 30px', background: 'linear-gradient(135deg, #007AFF 0%, #0050C8 100%)' }}>
-                <h3 style={{ fontSize: 19, fontWeight: 700, color: '#fff', letterSpacing: '-0.03em', marginBottom: 20 }}>
-                  {ab.market_bikon_title}
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 11 }}>
-                  {(ab.market_bikon_items as { label: string; value: string }[]).map(({ label, value }) => (
-                    <div key={label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
-                      <span style={{ fontSize: 14, color: 'rgba(255,255,255,0.45)' }}>{label}</span>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', letterSpacing: '-0.02em', whiteSpace: 'nowrap' }}>{value}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-            </div>
-
-            {/* RIGHT — Uzbekistan SVG map */}
-            <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-
-              {/* Ambient glow behind map */}
-              <div aria-hidden style={{
-                position: 'absolute', width: '80%', height: '70%',
-                background: 'radial-gradient(ellipse, rgba(0,122,255,0.15) 0%, transparent 70%)',
-                filter: 'blur(52px)', borderRadius: '50%',
-              }} />
-
-              <img
-                src="/icons/uz.svg"
-                alt="Uzbekistan map"
-                draggable={false}
-                style={{
-                  width: '100%',
-                  maxWidth: 620,
-                  height: 'auto',
-                  position: 'relative',
-                  zIndex: 1,
-                  filter: 'invert(36%) sepia(90%) saturate(500%) hue-rotate(195deg) brightness(95%) contrast(95%) drop-shadow(0 8px 32px rgba(0,122,255,0.3))',
-                  userSelect: 'none',
-                }}
-              />
-            </div>
-
-          </div>
         </div>
       </section>
 

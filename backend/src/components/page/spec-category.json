@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_page_spec_categories",
+  "info": {
+    "displayName": "Spec Category",
+    "icon": "table"
+  },
+  "options": {},
+  "attributes": {
+    "name": { "type": "string" },
+    "rows": {
+      "type": "component",
+      "repeatable": true,
+      "component": "page.spec-row"
+    }
+  }
+}

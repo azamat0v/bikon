@@ -4,13 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**bikon.uz** is a premium marketing and e-commerce landing site for Bikon, an Uzbek computer hardware manufacturer founded in 2015 in Tashkent. The site showcases four product lines and serves B2B, B2G, and B2C markets across Uzbekistan.
+**bikon.uz** is a premium marketing and e-commerce landing site for Bikon, an Uzbek computer hardware manufacturer founded in 2015 in Tashkent. The site serves B2B, B2G, and B2C markets across Uzbekistan.
 
 **Product Lines:**
-- SMARTBOOK Series — Laptops
-- MATRIX Series — All-in-One Desktops
-- PHANTOM Series — PC Cases
-- VISION PRO Series — Monitors
+- SMARTBOOK / WORKBOOK Series — Laptops (`/laptops`)
+- MATRIX Series AiOs — entry/mid all-in-one desktops (`/aios`, with model pages at `/matrix` and `/optima`)
+- NOVA — premium all-in-one desktop (`/nova`)
+- PHANTOM Series — PC Cases (`/cases`)
+- VISION PRO Series — Monitors (`/monitors`)
 
 ## Tech Stack
 
@@ -25,8 +26,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Icons | Lucide React |
 | Routing | Custom client-side (History API) |
 | i18n | Custom translations (EN / RU / UZ) |
-| AI | Google Gemini API (`@google/genai`) |
-| Server | Express 4 (for local dev/API routes) |
 
 ## Dev Commands
 
@@ -38,7 +37,7 @@ npm run lint      # TypeScript type-check (no emit)
 npm run clean     # Remove /dist folder
 ```
 
-No test suite exists yet (`npm run lint` is the only code-correctness check).
+No test suite exists (`npm run lint` is the only code-correctness check).
 
 ## Architecture
 
@@ -49,11 +48,11 @@ Custom client-side router using `window.history.pushState`. Current pages:
 - `/about` — About/company page
 - `/monitors` — VISION PRO monitors product page
 - `/laptops` — SMARTBOOK laptops product page
-- `/aios` — MATRIX all-in-one desktops product page
-- `/nova` — NOVA product page
-- `/matrix` — MATRIX product page (dark theme, black bg)
-- `/optima` — OPTIMA product page (dark theme, black bg)
-- `/cases` — PHANTOM Series PC cases product page (gaming theme, purple accent)
+- `/aios` — MATRIX all-in-one desktops product page (comparison table)
+- `/nova` — NOVA all-in-one product page (dark/black theme)
+- `/matrix` — Bikon Matrix AiO product page (dark/black theme)
+- `/optima` — Bikon Optima AiO product page (dark/black theme)
+- `/cases` — PHANTOM Series PC cases product page (gaming theme, purple `#a855f7` accent)
 - `/blog` — Blog listing + `/blog/:slug` article detail
 - `/b2b` — B2B inquiry form (sends leads via Telegram bot)
 - `/careers` — Careers application form with CV upload (sends via Telegram bot)
@@ -81,15 +80,15 @@ LanguageProvider
               └── AppContent (switches on `page`)
                     ├── HomePage → creates Lenis → LenisContext.Provider
                     ├── AboutPage (no Lenis, uses GSAP ScrollTrigger)
-                    ├── MonitorsPage / LaptopsPage / AiosPage / NovaPage (no Lenis)
-                    ├── MatrixPage / OptimaPage / CasesPage (no Lenis, dark/black bg theme)
+                    ├── MonitorsPage / LaptopsPage / AiosPage (no Lenis)
+                    ├── NovaPage / MatrixPage / OptimaPage / CasesPage (no Lenis, dark/black bg)
                     ├── BlogPage (no Lenis, fetches from Strapi)
-                    └── B2BPage / CareersPage / HowToBuyPage / ServiceCenterPage (static content pages)
+                    └── B2BPage / CareersPage / HowToBuyPage / ServiceCenterPage (static)
 ```
 
 ### ShopModal
 
-`ShopModalContext` exposes `useShopModal()` → `{ open(product?: string) }`. Calling `open()` raises a multi-step modal (call → Telegram form → success/error). The modal submits leads to a Telegram bot; credentials (`TG_TOKEN`, `TG_CHAT`) are **hardcoded in `ShopModalContext.tsx`** and not env-driven. The same bot credentials are duplicated in `B2BPage.tsx` and `CareersPage.tsx`.
+`ShopModalContext` exposes `useShopModal()` → `{ open(product?: string) }`. Calling `open()` raises a multi-step modal (call → Telegram form → success/error). The modal submits leads to a Telegram bot; credentials (`TG_TOKEN`, `TG_CHAT`) are **hardcoded** and not env-driven. The same credentials are duplicated in `CTASection.tsx`, `B2BPage.tsx`, and `CareersPage.tsx`.
 
 ### Internationalization
 
@@ -116,29 +115,29 @@ All strings live in [src/i18n/translations.ts](src/i18n/translations.ts). Add ev
 | `SplitHeading` | Reusable line-by-line slide-up animation; splits on `\n`, accepts `delay` prop |
 | `SpecsSection` | Reusable two-column spec comparison table with blueprint dark background |
 | `ProductSection` | Reusable split-layout product showcase — used 4× on the home page |
-| `LaptopScroll` | Canvas-based 210-frame scroll-driven animation (frames in `/public/sequence/`) |
+| `CTASection` | "Build Your PC" lead-capture form on the home page; submits to Telegram bot |
 | `AboutPage` | Company page with GSAP `ScrollTrigger` animations |
 | `MonitorsPage` | VISION PRO monitors product page; uses `SplitHeading` + `SpecsSection` |
-| `LaptopsPage` | SMARTBOOK laptops product page; uses `SplitHeading` + `SpecsSection` |
+| `LaptopsPage` | SMARTBOOK laptops product page; uses `SplitHeading` + `SpecsSection`; canvas scroll sequence from `/public/laptops/` |
 | `AiosPage` | MATRIX all-in-one desktops product page; includes inline comparison table |
-| `NovaPage` | NOVA product page; uses `SplitHeading` + `SpecsSection` |
-| `MatrixPage` | MATRIX product page; dark/black theme, uses `SpecsSection` + `FloatingPathsBackground` |
-| `OptimaPage` | OPTIMA product page; dark/black theme, mirrors `MatrixPage` structure |
-| `CasesPage` | PHANTOM Series cases page; gaming theme (purple `#a855f7` accent), video hero + 3 model cards (image↔video on hover) + ports grid + SpecsSection |
+| `NovaPage` | NOVA all-in-one product page; dark/black theme, uses `SplitHeading` + `SpecsSection` + `FloatingPathsBackground` |
+| `MatrixPage` | Bikon Matrix AiO product page; dark/black theme, uses `SpecsSection` + `FloatingPathsBackground` |
+| `OptimaPage` | Bikon Optima AiO product page; dark/black theme, mirrors `MatrixPage` structure |
+| `CasesPage` | PHANTOM Series cases page; gaming theme, video hero + 3 model cards (image↔video on hover) + ports grid + `SpecsSection` |
 | `BlogPage` | Blog listing + article detail; fetches from Strapi, renders Strapi v5 rich-text blocks |
 | `B2BPage` | B2B wholesale inquiry form; submits lead to Telegram bot |
 | `CareersPage` | Job application form with CV file upload; submits to Telegram bot via multipart |
 | `HowToBuyPage` | Static purchasing guide |
 | `ServiceCenterPage` | Static service center info page |
-| `FloatingPathsBackground` | SVG animated paths background used in dark-theme pages (in `src/components/ui/floating-paths.tsx`) |
+| `FloatingPathsBackground` | SVG animated paths background used in dark-theme pages (`src/components/ui/floating-paths.tsx`) |
 
 ## Animation Patterns
 
 - **Entry animations**: `motion.div` from `motion/react` with `initial`/`animate`/`whileInView`
 - **Line-by-line headings**: `SplitHeading` component (wraps each `\n`-delimited line in a masked `motion.span`)
 - **Scroll-driven (GSAP)**: `ScrollTrigger` — see `AboutPage.tsx`
-- **Canvas sequence**: `LaptopScroll.tsx` — 210 JPEG frames from `/public/sequence/`
-- **3D tilt**: Mouse-tracked perspective transforms — see `Hero.tsx`, `CatalogSection.tsx`
+- **Canvas sequence**: `LaptopsPage.tsx` — JPEG frames from `/public/laptops/`
+- **3D tilt**: Mouse-tracked perspective transforms — see `Hero.tsx`
 
 ## Styling Conventions
 
@@ -176,7 +175,7 @@ The home page's `ProductSection` data and the blog are powered by Strapi v5. The
 Create a `.env` file in the project root (no `.env.example` exists):
 
 ```
-GEMINI_API_KEY=    # Google Gemini AI API key (injected into client bundle via Vite define)
+GEMINI_API_KEY=    # Google Gemini AI API key (defined via Vite; not yet used in source)
 APP_URL=           # Deployed app URL (e.g. https://bikon.uz)
 VITE_STRAPI_URL=   # Strapi v5 base URL (defaults to http://localhost:1337)
 ```
@@ -188,15 +187,17 @@ public/
 ├── bikon.svg              # Favicon/logo
 ├── Bikon.pdf              # 2026 product catalog (downloadable)
 ├── laptop.png / monitor.png / monoblock.png / pc.png  # Home page product images
-├── sequence/              # 210 JPEG frames for LaptopScroll animation
+├── buildpc.png            # "Build your PC" section image
+├── sequence/              # 210 JPEG frames (currently unused in source)
 ├── aio/                   # AiO product images for AiosPage
+├── about/                 # Founder photo and partner logos for AboutPage
 ├── monitors/              # Monitor product images for MonitorsPage
-├── laptops/               # Laptop product images for LaptopsPage
+├── laptops/               # Laptop product images + canvas frames for LaptopsPage
 ├── nova/                  # NOVA product images for NovaPage
 ├── matrix/                # MATRIX product images for MatrixPage
 ├── optima/                # OPTIMA product images for OptimaPage
 ├── cases/                 # PC case product images
-├── icons/                 # Misc icon assets
+├── icons/                 # Misc icon assets (port icons, OS logos, etc.)
 └── categories/            # 4 category card images
 ```
 
@@ -207,12 +208,12 @@ public/
 ## Behavioral Notes
 
 - **PageLoader is session-gated** — it shows once per browser session via `sessionStorage` key `bikon_intro_shown`. On return visits within the same session it is skipped entirely and `onDone()` fires immediately. Clear `sessionStorage` to test the loader again.
-- **`BASE_PRODUCTS` wires detail pages via `learnMoreHref`** — `noutbuklar` (`/laptops`) and `monitorlar` (`/monitors`) are set; `monobloklar` and `cases` leave it `undefined` so their "Learn More" button is intentionally inert. `MatrixPage` and `OptimaPage` are separate product pages not tied to `BASE_PRODUCTS` entries.
+- **`BASE_PRODUCTS` wires detail pages via `learnMoreHref`** — `noutbuklar` (`/laptops`) and `monitorlar` (`/monitors`) are set; `monobloklar` and `cases` leave it `undefined` so their "Learn More" button is intentionally inert. `MatrixPage`, `OptimaPage`, and `NovaPage` are separate product pages not tied to `BASE_PRODUCTS` entries.
 - **External shop URL** — `ProductSection` always links "Buy Now" to `https://shop.bikon.uz` (hardcoded). It is not driven by translations or CMS.
 
 ## Backend (Strapi)
 
-`backend/` is a full **Strapi v5** project — not just Express scaffolding. The Express dependency in the root `package.json` is unused. Run Strapi separately (inside `backend/`) with its own `npm run develop`. The root Vite dev server and the Strapi backend are two independent processes; `VITE_STRAPI_URL` tells the frontend where to reach it.
+`backend/` is a full **Strapi v5** project. The `express` dependency in the root `package.json` is unused. Run Strapi separately (inside `backend/`) with its own `npm run develop`. The root Vite dev server and the Strapi backend are two independent processes; `VITE_STRAPI_URL` tells the frontend where to reach it.
 
 ## Notes
 

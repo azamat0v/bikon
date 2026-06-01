@@ -9,6 +9,7 @@ import SpecsSection from './SpecsSection';
 import { FloatingPathsBackground } from './ui/floating-paths';
 import { useLang } from '../context/LanguageContext';
 import { useShopModal } from '../context/ShopModalContext';
+import { useProductPageCms, cmsToSpecCategories } from '../lib/useProductPageCms';
 
 interface OptimaTr {
   hero_eyebrow: string;
@@ -67,7 +68,28 @@ function useIsMobile(bp = 768) {
 ───────────────────────────────────────────────────────────────────────── */
 export default function OptimaPage() {
   const { tr } = useLang();
-  const l = (tr as unknown as { optima: OptimaTr }).optima;
+  const base = (tr as unknown as { optima: OptimaTr }).optima;
+  const cms = useProductPageCms('optima');
+  const cmsSpecs = cmsToSpecCategories(cms);
+
+  const l: OptimaTr = {
+    ...base,
+    hero_eyebrow:       cms?.hero_eyebrow       ?? base.hero_eyebrow,
+    hero_title:         cms?.hero_title         ?? base.hero_title,
+    hero_subtitle:      cms?.hero_subtitle      ?? base.hero_subtitle,
+    hero_cta_primary:   cms?.hero_cta_primary   ?? base.hero_cta_primary,
+    hero_cta_secondary: cms?.hero_cta_secondary ?? base.hero_cta_secondary,
+    lineup_eyebrow:     cms?.lineup_eyebrow     ?? base.lineup_eyebrow,
+    lineup_title:       cms?.lineup_title       ?? base.lineup_title,
+    lineup_name:        cms?.models?.[0]?.name        ?? base.lineup_name,
+    lineup_tag:         cms?.models?.[0]?.tag         ?? base.lineup_tag,
+    lineup_desc:        cms?.models?.[0]?.description ?? base.lineup_desc,
+    lineup_specs:       (cms?.models?.[0]?.specs as string[] | null) ?? base.lineup_specs,
+    specs_eyebrow:      cms?.specs_eyebrow ?? base.specs_eyebrow,
+    specs_title:        cms?.specs_title   ?? base.specs_title,
+    specs_label:        cms?.specs_label   ?? base.specs_label,
+    specs_categories:   cmsSpecs           ?? base.specs_categories,
+  };
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>
@@ -211,7 +233,7 @@ function DisplaySection({ l }: { l: OptimaTr }) {
             src="/optima/front.png" alt="Optima Display" draggable={false}
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.9 }}
-            style={{ width: '100%', maxWidth: 560, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
+            style={{ width: '100%', maxWidth: 760, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
           />
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
@@ -232,10 +254,10 @@ function DisplaySection({ l }: { l: OptimaTr }) {
       <div style={{ position: 'sticky', top: 0, height: '100vh', overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '0 4%' }}>
         <FloatingPathsBackground position={-1} className="absolute inset-0 w-full h-full" pathClassName="opacity-60" />
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2%', width: '100%', position: 'relative', zIndex: 1 }}>
-          <div style={{ flex: '0 0 60%', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ flex: '0 0 68%', display: 'flex', justifyContent: 'center' }}>
             <img
               src="/optima/front.png" alt="Optima Display" draggable={false}
-              style={{ width: '100%', maxWidth: 1000, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))', transform: `scale(${imageScale})`, transition: 'transform 0.05s linear', transformOrigin: 'center center' }}
+              style={{ width: '100%', maxWidth: 1200, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))', transform: `scale(${imageScale})`, transition: 'transform 0.05s linear', transformOrigin: 'center center' }}
             />
           </div>
           <div style={{ flex: 1, position: 'relative' }}>
@@ -282,10 +304,10 @@ function BackSection({ l }: { l: OptimaTr }) {
         <motion.div
           initial={{ opacity: 0, x: 32 }} whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }} transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-          style={{ flex: '0 0 46%', display: 'flex', justifyContent: 'center' }}
+          style={{ flex: '0 0 55%', display: 'flex', justifyContent: 'center' }}
         >
           <img src="/optima/back.png" alt="Optima Rear Design" draggable={false}
-            style={{ width: '100%', maxWidth: 480, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))' }}
+            style={{ width: '100%', maxWidth: 700, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))' }}
           />
         </motion.div>
         <motion.div
@@ -331,10 +353,10 @@ function CameraAndSoundSection({ l }: { l: OptimaTr }) {
         <motion.div
           initial={{ opacity: 0, x: -60 }} whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }} transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-          style={{ flex: '0 0 45%', display: 'flex', justifyContent: 'center' }}
+          style={{ flex: '0 0 55%', display: 'flex', justifyContent: 'center' }}
         >
           <img src="/optima/camera.png" alt="Optima Camera" draggable={false}
-            style={{ width: '100%', maxWidth: 440, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.85))' }}
+            style={{ width: '100%', maxWidth: 660, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.85))' }}
           />
         </motion.div>
         <motion.div
@@ -551,14 +573,12 @@ function BentoSection({ l }: { l: OptimaTr }) {
    AppsSection
 ───────────────────────────────────────────────────────────────────────── */
 const WIN_APPS_O = [
-  { label: 'Word',     bg: '#2B579A', icon: <svg viewBox="0 0 32 32" width="26" height="26"><rect x="1" y="1" width="30" height="30" rx="4" fill="#2B579A"/><text x="16" y="22" textAnchor="middle" fill="white" fontSize="16" fontWeight="900" fontFamily="Arial">W</text></svg> },
-  { label: 'Excel',    bg: '#217346', icon: <svg viewBox="0 0 32 32" width="26" height="26"><rect x="1" y="1" width="30" height="30" rx="4" fill="#217346"/><text x="16" y="22" textAnchor="middle" fill="white" fontSize="16" fontWeight="900" fontFamily="Arial">X</text></svg> },
-  { label: 'PowerPoint', bg: '#B7472A', icon: <svg viewBox="0 0 32 32" width="26" height="26"><rect x="1" y="1" width="30" height="30" rx="4" fill="#B7472A"/><text x="16" y="22" textAnchor="middle" fill="white" fontSize="16" fontWeight="900" fontFamily="Arial">P</text></svg> },
-  { label: 'Outlook',  bg: '#0078D4', icon: <svg viewBox="0 0 32 32" width="26" height="26"><rect x="1" y="1" width="30" height="30" rx="4" fill="#0078D4"/><text x="16" y="22" textAnchor="middle" fill="white" fontSize="14" fontWeight="900" fontFamily="Arial">O</text></svg> },
-  { label: 'Teams',    bg: '#6264A7', icon: <svg viewBox="0 0 32 32" width="26" height="26"><rect x="1" y="1" width="30" height="30" rx="4" fill="#6264A7"/><text x="16" y="22" textAnchor="middle" fill="white" fontSize="14" fontWeight="900" fontFamily="Arial">T</text></svg> },
-  { label: 'Edge',     bg: '#0078D4', icon: <svg viewBox="0 0 32 32" width="26" height="26"><rect x="1" y="1" width="30" height="30" rx="4" fill="#0078D4"/><path d="M8 20c0-6 4-10 10-10 2 0 4 .5 5 1.5C21 8 18 6 15 6 9 6 5 11 5 16c0 3 1.5 6 4 8 1 .5 2 .8 3 .8 3 0 5-1 6.5-3H12C9.5 21.8 8 21 8 20z" fill="white"/></svg> },
-  { label: 'OneDrive', bg: '#0078D4', icon: <svg viewBox="0 0 32 32" width="26" height="26"><rect x="1" y="1" width="30" height="30" rx="4" fill="#0078D4"/><path d="M6 20c0-3 2-5 5-5 .5 0 1 .1 1.5.2C13 13 15 12 17 12c3 0 5 2 5 5 1.5.5 3 2 3 4H4c0-1 1-2 2-2.5V20z" fill="white"/></svg> },
-  { label: 'Notepad',  bg: '#FFD700', icon: <svg viewBox="0 0 32 32" width="26" height="26"><rect x="1" y="1" width="30" height="30" rx="4" fill="#FFF5CC"/><rect x="6" y="9" width="20" height="2" rx="1" fill="#333"/><rect x="6" y="14" width="20" height="2" rx="1" fill="#333"/><rect x="6" y="19" width="14" height="2" rx="1" fill="#333"/></svg> },
+  { label: 'Chrome',     src: '/icons/windows/chroma.png'      },
+  { label: 'Word',       src: '/icons/windows/Word.png'        },
+  { label: 'Excel',      src: '/icons/windows/Excel.png'       },
+  { label: 'PowerPoint', src: '/icons/windows/Power point.png' },
+  { label: 'Telegram',   src: '/icons/windows/telegram.png'    },
+  { label: 'Zoom',       src: '/icons/windows/zoom.png'        },
 ];
 
 function AppsSection({ l }: { l: OptimaTr }) {
@@ -579,12 +599,12 @@ function AppsSection({ l }: { l: OptimaTr }) {
         <motion.div
           initial={{ opacity: 0, x: 32 }} whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }} transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-          style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12 }}
+          style={{ flex: 1, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}
         >
-          {WIN_APPS_O.map(({ label, bg, icon }) => (
+          {WIN_APPS_O.map(({ label, src }) => (
             <div key={label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 56, height: 56, borderRadius: 14, background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: `0 4px 16px ${bg}44` }}>
-                {icon}
+              <div style={{ width: 60, height: 60, borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}>
+                <img src={src} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
               <span style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.5)', letterSpacing: '0.04em', textAlign: 'center' }}>{label}</span>
             </div>
@@ -619,9 +639,9 @@ function LineupSection({ l }: { l: OptimaTr }) {
           whileHover={{ y: -8, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }}
           style={{ maxWidth: 520, margin: '0 auto', borderRadius: 24, border: '1px solid rgba(255,255,255,0.08)', background: 'linear-gradient(180deg, #0f0f12 0%, #0a0a0c 100%)', overflow: 'hidden', display: 'flex', flexDirection: 'column', cursor: 'default' }}
         >
-          <div style={{ padding: '52px 40px 28px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280, position: 'relative' }}>
-            <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 70% at 50% 60%, rgba(0,102,204,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
-            <img src="/optima/front.png" alt={l.lineup_name} draggable={false} style={{ width: '90%', maxWidth: 460, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.9))', position: 'relative', zIndex: 1 }} />
+          <div style={{ position: 'relative', overflow: 'hidden', height: 280 }}>
+            <div aria-hidden style={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 70% at 50% 60%, rgba(0,102,204,0.15) 0%, transparent 70%)', pointerEvents: 'none', zIndex: 1 }} />
+            <img src="/optima/front.png" alt={l.lineup_name} draggable={false} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.9))', display: 'block' }} />
           </div>
           <div style={{ padding: '24px 32px 36px' }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 8 }}>

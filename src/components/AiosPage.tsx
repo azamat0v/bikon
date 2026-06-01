@@ -6,6 +6,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import SplitHeading from './SplitHeading';
 import { useLang } from '../context/LanguageContext';
+import { useProductPageCms } from '../lib/useProductPageCms';
 import { useRouter } from '../context/RouterContext';
 
 interface AiosTr {
@@ -51,7 +52,28 @@ function useIsMobile(bp = 768) {
 ───────────────────────────────────────────────────────────────────────── */
 export default function AiosPage() {
   const { tr } = useLang();
-  const l = (tr as unknown as { aios: AiosTr }).aios;
+  const base = (tr as unknown as { aios: AiosTr }).aios;
+  const cms = useProductPageCms('aios');
+
+  const l: AiosTr = {
+    ...base,
+    hero_eyebrow:       cms?.hero_eyebrow       ?? base.hero_eyebrow,
+    hero_title:         cms?.hero_title         ?? base.hero_title,
+    hero_subtitle:      cms?.hero_subtitle      ?? base.hero_subtitle,
+    hero_cta_primary:   cms?.hero_cta_primary   ?? base.hero_cta_primary,
+    hero_cta_secondary: cms?.hero_cta_secondary ?? base.hero_cta_secondary,
+    models_eyebrow:     cms?.lineup_eyebrow     ?? base.models_eyebrow,
+    models_title:       cms?.lineup_title       ?? base.models_title,
+    models_matrix_name: cms?.models?.[0]?.name        ?? base.models_matrix_name,
+    models_matrix_tag:  cms?.models?.[0]?.tag         ?? base.models_matrix_tag,
+    models_matrix_desc: cms?.models?.[0]?.description ?? base.models_matrix_desc,
+    models_optima_name: cms?.models?.[1]?.name        ?? base.models_optima_name,
+    models_optima_tag:  cms?.models?.[1]?.tag         ?? base.models_optima_tag,
+    models_optima_desc: cms?.models?.[1]?.description ?? base.models_optima_desc,
+    models_nova_name:   cms?.models?.[2]?.name        ?? base.models_nova_name,
+    models_nova_tag:    cms?.models?.[2]?.tag         ?? base.models_nova_tag,
+    models_nova_desc:   cms?.models?.[2]?.description ?? base.models_nova_desc,
+  };
 
   return (
     <div className="bg-white min-h-screen" style={{ overflowX: 'clip' }}>
@@ -264,7 +286,6 @@ function HeroSection({ l }: { l: AiosTr }) {
           width: '100%', maxWidth: 680, padding: '0 24px',
           pointerEvents: textOp > 0.1 ? undefined : 'none',
         }}>
-          <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.2em', textTransform: 'uppercase' as const, color: '#0066CC', display: 'block', marginBottom: 14 }}>{l.hero_eyebrow}</span>
           <h1 style={{ fontSize: 'clamp(36px, 5.5vw, 72px)', fontWeight: 900, letterSpacing: '-0.05em', lineHeight: 1.04, color: '#fff', whiteSpace: 'pre-line', marginBottom: 18 }}>{l.hero_title}</h1>
           <p style={{ fontSize: 'clamp(14px, 1.6vw, 18px)', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, marginBottom: 36 }}>{l.hero_subtitle}</p>
           <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -377,9 +398,8 @@ function ModelNavigationSection({ l }: { l: AiosTr }) {
           >
             {/* Image area */}
             <div style={{
-              padding: '44px 32px 24px',
-              display: 'flex', justifyContent: 'center', alignItems: 'center',
-              minHeight: 320, position: 'relative',
+              position: 'relative', overflow: 'hidden',
+              height: 280,
             }}>
               <div aria-hidden style={{
                 position: 'absolute', inset: 0, pointerEvents: 'none',
@@ -387,7 +407,7 @@ function ModelNavigationSection({ l }: { l: AiosTr }) {
               }} />
               <img
                 src={img} alt={name} draggable={false}
-                style={{ width: '100%', maxWidth: 520, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.9))', position: 'relative', zIndex: 1 }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.9))', position: 'relative', zIndex: 1, display: 'block' }}
               />
             </div>
 

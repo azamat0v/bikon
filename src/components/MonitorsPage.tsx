@@ -10,6 +10,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import { useLang } from '../context/LanguageContext';
 import { useShopModal } from '../context/ShopModalContext';
+import { useProductPageCms, cmsToSpecCategories } from '../lib/useProductPageCms';
 import SplitHeading from './SplitHeading';
 import SpecsSection from './SpecsSection';
 
@@ -76,7 +77,31 @@ function useIsMobile(bp = 768) {
 ───────────────────────────────────────────────────────────────────────── */
 export default function MonitorsPage() {
   const { tr } = useLang();
-  const m = tr.monitors as MonitorsTr;
+  const base = tr.monitors as MonitorsTr;
+  const cms = useProductPageCms('monitors');
+  const cmsSpecs = cmsToSpecCategories(cms);
+
+  const m: MonitorsTr = {
+    ...base,
+    hero_eyebrow:       cms?.hero_eyebrow       ?? base.hero_eyebrow,
+    hero_title:         cms?.hero_title         ?? base.hero_title,
+    hero_subtitle:      cms?.hero_subtitle      ?? base.hero_subtitle,
+    hero_cta_primary:   cms?.hero_cta_primary   ?? base.hero_cta_primary,
+    hero_cta_secondary: cms?.hero_cta_secondary ?? base.hero_cta_secondary,
+    lineup_eyebrow:     cms?.lineup_eyebrow     ?? base.lineup_eyebrow,
+    lineup_title:       cms?.lineup_title       ?? base.lineup_title,
+    lineup_vision_name: cms?.models?.[0]?.name        ?? base.lineup_vision_name,
+    lineup_vision_tag:  cms?.models?.[0]?.tag         ?? base.lineup_vision_tag,
+    lineup_vision_desc: cms?.models?.[0]?.description ?? base.lineup_vision_desc,
+    lineup_pro_name:    cms?.models?.[1]?.name        ?? base.lineup_pro_name,
+    lineup_pro_tag:     cms?.models?.[1]?.tag         ?? base.lineup_pro_tag,
+    lineup_pro_desc:    cms?.models?.[1]?.description ?? base.lineup_pro_desc,
+    lineup_badge_pro:   cms?.models?.[1]?.badge       ?? base.lineup_badge_pro,
+    specs_eyebrow:      cms?.specs_eyebrow ?? base.specs_eyebrow,
+    specs_title:        cms?.specs_title   ?? base.specs_title,
+    specs_vision_label: cms?.specs_label   ?? base.specs_vision_label,
+    specs_categories:   cmsSpecs           ?? base.specs_categories,
+  };
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>
@@ -153,19 +178,32 @@ function HeroSection({ m }: { m: MonitorsTr }) {
   // Smoothstep easing — eliminates the mechanical linear feel
   const ci = (x0: number, x1: number, y0: number, y1: number) => {
     const t = Math.max(0, Math.min(1, (prog - x0) / (x1 - x0)));
-    const s = t * t * (3 - 2 * t); // smoothstep curve
+    const s = t * t * (3 - 2 * t);
     return y0 + (y1 - y0) * s;
   };
 
-  // Container is 300vh → max sticky progress = 200/300 = 0.667
-  const videoScale = ci(0,    1,    1.0,  0.60);  // slow cinematic pull-back
-  const videoOp    = ci(0.25, 0.60, 1,    0   );  // long gradual fade
-  const vigOp      = prog < 0.42 ? ci(0.15, 0.42, 0, 0.15) : ci(0.42, 0.60, 0.15, 0);
-  const imageScale = ci(0,    0.62, 2.4,  1.0 );  // monitor reveals from screen-size
-  const imageOp    = ci(0.30, 0.62, 0,    1   );  // slightly later than video starts fading
-  const textOp     = ci(0.60, 0.65, 0,    1   );
-  const textYpx    = ci(0.60, 0.65, 28,   0   );
-  const hintOp     = ci(0,    0.07, 1,    0   );
+  // Both video and monitor share the same transformOrigin: '50% 43%'
+  // (monitor screen centre ≈ 43% from viewport top when stand is included).
+  // This keeps them anchored to the same point throughout the animation.
+  //
+  // Monitor image 88vw: body ≈ 78% = 68.6vw, screen ≈ 85% body = 58.3vw.
+  // So video shrinks to 0.59 (59vw) ≈ monitor screen (58.3vw) — near-perfect fit.
+
+  const videoScale  = ci(0,    0.55, 1.0,  0.59);  // shrinks to monitor screen width
+  const videoRadius = ci(0.05, 0.50, 0,    22  );   // rounded corners as it shrinks
+  const videoOp     = ci(0.48, 0.58, 1,    0   );   // fades when it fills the screen
+  const shadowAlpha = ci(0.05, 0.50, 0,    0.55);   // subtle card shadow
+
+  // Monitor appears when video is ~75% (just wider than the screen bezel).
+  // As video shrinks from 75% → 59%, bezels gradually frame it — Apple TV reveal.
+  const imageOp    = ci(0.36, 0.54, 0, 1);
+  const imageScale = ci(0.36, 0.62, 1.08, 1.0);    // gentle zoom-in settle
+
+  const vigOp   = ci(0, 0.22, 0.14, 0);
+
+  const textOp  = ci(0.58, 0.66, 0, 1);
+  const textYpx = ci(0.58, 0.66, 28, 0);
+  const hintOp  = ci(0, 0.07, 1, 0);
 
   return (
     <div ref={containerRef} style={{ height: '300vh', position: 'relative' }}>
@@ -187,26 +225,13 @@ function HeroSection({ m }: { m: MonitorsTr }) {
           }} />
         ))}
 
-        {/* Video */}
-        <video autoPlay muted playsInline loop src="/monitors/hero.mp4" style={{
-          position: 'absolute', inset: 0, width: '100%', height: '100%',
-          objectFit: 'cover', transformOrigin: 'center center', zIndex: 1,
-          transform: `scale(${videoScale})`, opacity: videoOp,
-        }} />
-
-        {/* Vignette */}
-        <div aria-hidden style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 2,
-          opacity: vigOp,
-          background: 'radial-gradient(ellipse 75% 75% at 50% 50%, transparent 35%, rgba(0,0,0,0.92) 100%)',
-        }} />
-
-        {/* Product image — starts zoomed into screen area, pulls back to reveal full monitor */}
+        {/* Monitor image — same transformOrigin as video so both anchor to the screen centre. */}
         <div style={{
-          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+          position: 'absolute', inset: 0, zIndex: 1, pointerEvents: 'none',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          transform: `scale(${imageScale})`, transformOrigin: 'center center',
           opacity: imageOp,
+          transform: `scale(${imageScale})`,
+          transformOrigin: '50% 43%',
         }}>
           <img
             src="/monitors/heroimg.png"
@@ -216,6 +241,30 @@ function HeroSection({ m }: { m: MonitorsTr }) {
           />
         </div>
 
+        {/* Video card — Apple TV style: shrinks with rounded corners and drop shadow,
+            transformOrigin anchored at monitor screen centre (50% 41% of viewport).
+            overflow:hidden on wrapper clips the video to the animated border-radius. */}
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 2,
+          transformOrigin: '50% 43%',
+          transform: `scale(${videoScale})`,
+          opacity: videoOp,
+          borderRadius: videoRadius,
+          overflow: 'hidden',
+          boxShadow: `0 32px 96px rgba(0,0,0,${shadowAlpha}), 0 8px 32px rgba(0,0,0,${shadowAlpha * 0.6})`,
+        }}>
+          <video autoPlay muted playsInline loop src="/monitors/hero.mp4" style={{
+            width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+          }} />
+        </div>
+
+        {/* Vignette — subtle darkening at full-screen, fades away as card appears */}
+        <div aria-hidden style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 3,
+          opacity: vigOp,
+          background: 'radial-gradient(ellipse 70% 70% at 50% 41%, transparent 40%, rgba(0,0,0,0.75) 100%)',
+        }} />
+
         {/* Text overlay */}
         <div style={{
           position: 'absolute', bottom: '9%', left: '50%', zIndex: 10,
@@ -224,10 +273,6 @@ function HeroSection({ m }: { m: MonitorsTr }) {
           width: '100%', maxWidth: 680, padding: '0 24px',
           pointerEvents: textOp > 0.1 ? undefined : 'none',
         }}>
-          <span style={{
-            fontSize: 11, fontWeight: 800, letterSpacing: '0.2em',
-            textTransform: 'uppercase', color: '#0066CC', display: 'block', marginBottom: 14,
-          }}>{m.hero_eyebrow}</span>
           <h1 style={{
             fontSize: 'clamp(36px, 5.5vw, 72px)', fontWeight: 900,
             letterSpacing: '-0.05em', lineHeight: 1.04, color: '#fff',
@@ -701,9 +746,10 @@ function BentoSectionMonitors({ m }: { m: MonitorsTr }) {
    PortsSectionMonitors — D-SUB · HDMI · AUX connectivity
 ───────────────────────────────────────────────────────────────────────── */
 const MONITOR_PORTS: { Icon: React.ElementType | string; label: string; spec: string }[] = [
-  { Icon: '/icons/vga.png',  label: 'D-SUB',  spec: 'VGA Input'       },
-  { Icon: '/icons/hdmi.png', label: 'HDMI',   spec: 'HDMI 1.4 In'    },
-  { Icon: '/icons/aux.png',  label: 'AUX',    spec: '3.5mm Audio Out' },
+  { Icon: '/icons/vga.png',  label: 'D-SUB',        spec: 'VGA Input'       },
+  { Icon: '/icons/hdmi.png', label: 'HDMI',          spec: 'HDMI 1.4 In'    },
+  { Icon: '/icons/dp.png',   label: 'DisplayPort',   spec: 'DP 1.2 In'      },
+  { Icon: '/icons/aux.png',  label: 'AUX',           spec: '3.5mm Audio Out' },
 ];
 
 function PortsSectionMonitors({ m }: { m: MonitorsTr }) {
@@ -762,7 +808,7 @@ function PortsSectionMonitors({ m }: { m: MonitorsTr }) {
         {MONITOR_PORTS.map(({ Icon, label, spec }, i) => {
           const IconEl = Icon as React.ElementType;
           const iconContent = typeof Icon === 'string'
-            ? <img src={Icon} alt={label} style={{ width: 26, height: 26, objectFit: 'contain' as const }} />
+            ? <img src={Icon} alt={label} style={{ width: 38, height: 38, objectFit: 'contain' as const }} />
             : <IconEl size={24} color="#0066CC" strokeWidth={1.6} />;
           return (
           <motion.div
@@ -793,7 +839,7 @@ function PortsSectionMonitors({ m }: { m: MonitorsTr }) {
             }}
           >
             <div style={{
-              width: 56, height: 56, borderRadius: 14,
+              width: 72, height: 72, borderRadius: 18,
               background: 'rgba(0,102,204,0.1)',
               border: '1px solid rgba(0,102,204,0.2)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',

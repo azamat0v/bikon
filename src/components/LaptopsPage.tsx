@@ -7,6 +7,7 @@ import Footer from './Footer';
 import SplitHeading from './SplitHeading';
 import SpecsSection from './SpecsSection';
 import { useLang } from '../context/LanguageContext';
+import { useProductPageCms, cmsToSpecCategories } from '../lib/useProductPageCms';
 import { useShopModal } from '../context/ShopModalContext';
 
 /* ─────────────────────────────────────────────────────────────────────────
@@ -71,7 +72,29 @@ function useIsMobile(bp = 768) {
 ───────────────────────────────────────────────────────────────────────── */
 export default function LaptopsPage() {
   const { tr } = useLang();
-  const l = tr.laptops as LaptopsTr;
+  const base = tr.laptops as LaptopsTr;
+  const cms = useProductPageCms('laptops');
+  const cmsSpecs = cmsToSpecCategories(cms);
+
+  const l: LaptopsTr = {
+    ...base,
+    hero_eyebrow:         cms?.hero_eyebrow       ?? base.hero_eyebrow,
+    hero_title:           cms?.hero_title         ?? base.hero_title,
+    hero_subtitle:        cms?.hero_subtitle      ?? base.hero_subtitle,
+    hero_cta_primary:     cms?.hero_cta_primary   ?? base.hero_cta_primary,
+    hero_cta_secondary:   cms?.hero_cta_secondary ?? base.hero_cta_secondary,
+    lineup_eyebrow:       cms?.lineup_eyebrow     ?? base.lineup_eyebrow,
+    lineup_title:         cms?.lineup_title       ?? base.lineup_title,
+    lineup_smartbook_name: cms?.models?.[0]?.name        ?? base.lineup_smartbook_name,
+    lineup_smartbook_tag:  cms?.models?.[0]?.tag         ?? base.lineup_smartbook_tag,
+    lineup_smartbook_desc: cms?.models?.[0]?.description ?? base.lineup_smartbook_desc,
+    lineup_workbook_name:  cms?.models?.[1]?.name        ?? base.lineup_workbook_name,
+    lineup_workbook_tag:   cms?.models?.[1]?.tag         ?? base.lineup_workbook_tag,
+    lineup_workbook_desc:  cms?.models?.[1]?.description ?? base.lineup_workbook_desc,
+    specs_eyebrow:   cms?.specs_eyebrow ?? base.specs_eyebrow,
+    specs_title:     cms?.specs_title   ?? base.specs_title,
+    specs_categories: cmsSpecs          ?? base.specs_categories,
+  };
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>

@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_page_model_cards",
+  "info": {
+    "displayName": "Model Card",
+    "icon": "server",
+    "description": "Product model card with specs and media"
+  },
+  "options": {},
+  "attributes": {
+    "name":        { "type": "string" },
+    "tag":         { "type": "string" },
+    "description": { "type": "text" },
+    "specs":       { "type": "json" },
+    "badge":       { "type": "string" },
+    "image": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["images"]
+    },
+    "video": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": ["videos", "files"]
+    }
+  }
+}

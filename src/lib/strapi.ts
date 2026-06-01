@@ -115,3 +115,103 @@ export async function getArticles(locale: string): Promise<StrapiArticle[]> {
   const json = await res.json() as { data?: StrapiArticle[] };
   return json.data ?? [];
 }
+
+/* ── Product Page CMS types ─────────────────────────────────────────────── */
+export type ProductPageSlug = 'monitors' | 'laptops' | 'aios' | 'nova' | 'matrix' | 'optima' | 'cases';
+
+export interface CmsModelCard {
+  id: number;
+  name: string | null;
+  tag: string | null;
+  description: string | null;
+  specs: string[] | null;
+  badge: string | null;
+  image: { url: string; alternativeText: string | null } | null;
+  video: { url: string } | null;
+}
+
+export interface CmsSpecRow {
+  id: number;
+  col1: string | null;
+  col2: string | null;
+  col3: string | null;
+}
+
+export interface CmsSpecCategory {
+  id: number;
+  name: string | null;
+  rows: CmsSpecRow[];
+}
+
+export interface ProductPageCms {
+  id: number;
+  documentId: string;
+  slug: ProductPageSlug;
+  hero_eyebrow: string | null;
+  hero_title: string | null;
+  hero_subtitle: string | null;
+  hero_cta_primary: string | null;
+  hero_cta_secondary: string | null;
+  hero_image: { url: string; alternativeText: string | null } | null;
+  lineup_eyebrow: string | null;
+  lineup_title: string | null;
+  models: CmsModelCard[];
+  specs_eyebrow: string | null;
+  specs_title: string | null;
+  specs_label: string | null;
+  spec_categories: CmsSpecCategory[];
+}
+
+/** Fetch CMS content for a product page by slug. Returns null if not found or on error. */
+export async function getProductPage(slug: ProductPageSlug, locale: string): Promise<ProductPageCms | null> {
+  const params = new URLSearchParams({
+    'filters[slug][$eq]': slug,
+    'populate[hero_image]': 'true',
+    'populate[models][populate][0]': 'image',
+    'populate[models][populate][1]': 'video',
+    'populate[spec_categories][populate]': 'rows',
+    locale,
+    'pagination[pageSize]': '1',
+  });
+  try {
+    const res = await fetch(`${BASE}/api/product-pages?${params}`);
+    if (!res.ok) return null;
+    const json = await res.json() as { data?: ProductPageCms[] };
+    return json.data?.[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/* ── About Page CMS types ───────────────────────────────────────────────── */
+export interface AboutPageCms {
+  hero_eyebrow: string | null;
+  hero_title: string | null;
+  hero_subtitle: string | null;
+  story_eyebrow: string | null;
+  story_title: string | null;
+  story_body: string | null;
+  stats: { number: string; label: string }[] | null;
+  values: { icon: string; title: string; body: string }[] | null;
+  milestones: { year: string; title: string; desc: string }[] | null;
+  final_quote: string | null;
+  founder_image: { url: string; alternativeText: string | null } | null;
+  founder_name: string | null;
+  founder_title: string | null;
+}
+
+/** Fetch CMS content for the About page. Returns null if not published or on error. */
+export async function getAboutPage(locale: string): Promise<AboutPageCms | null> {
+  const params = new URLSearchParams({
+    'populate': 'founder_image',
+    locale,
+  });
+  try {
+    const res = await fetch(`${BASE}/api/about-page?${params}`);
+    if (!res.ok) return null;
+    const json = await res.json() as { data?: AboutPageCms | null };
+    return json.data ?? null;
+  } catch {
+    return null;
+  }
+}

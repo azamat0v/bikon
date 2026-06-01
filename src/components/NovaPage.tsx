@@ -9,6 +9,7 @@ import SpecsSection from './SpecsSection';
 import { FloatingPathsBackground } from './ui/floating-paths';
 import { useLang } from '../context/LanguageContext';
 import { useShopModal } from '../context/ShopModalContext';
+import { useProductPageCms, cmsToSpecCategories } from '../lib/useProductPageCms';
 
 /* ── Types ──────────────────────────────────────────────────────────────── */
 interface NovaTr {
@@ -72,7 +73,27 @@ function useIsMobile(bp = 768) {
 ───────────────────────────────────────────────────────────────────────── */
 export default function NovaPage() {
   const { tr } = useLang();
-  const l = (tr as unknown as { nova: NovaTr }).nova;
+  const base = (tr as unknown as { nova: NovaTr }).nova;
+  const cms = useProductPageCms('nova');
+  const cmsSpecs = cmsToSpecCategories(cms);
+
+  const l: NovaTr = {
+    ...base,
+    hero_eyebrow:       cms?.hero_eyebrow       ?? base.hero_eyebrow,
+    hero_title:         cms?.hero_title         ?? base.hero_title,
+    hero_subtitle:      cms?.hero_subtitle      ?? base.hero_subtitle,
+    hero_cta_primary:   cms?.hero_cta_primary   ?? base.hero_cta_primary,
+    hero_cta_secondary: cms?.hero_cta_secondary ?? base.hero_cta_secondary,
+    lineup_eyebrow:     cms?.lineup_eyebrow     ?? base.lineup_eyebrow,
+    lineup_title:       cms?.lineup_title       ?? base.lineup_title,
+    lineup_nova_name:   cms?.models?.[0]?.name        ?? base.lineup_nova_name,
+    lineup_nova_tag:    cms?.models?.[0]?.tag         ?? base.lineup_nova_tag,
+    lineup_nova_desc:   cms?.models?.[0]?.description ?? base.lineup_nova_desc,
+    specs_eyebrow:      cms?.specs_eyebrow ?? base.specs_eyebrow,
+    specs_title:        cms?.specs_title   ?? base.specs_title,
+    specs_label:        cms?.specs_label   ?? base.specs_label,
+    specs_categories:   cmsSpecs           ?? base.specs_categories,
+  };
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>
@@ -126,18 +147,27 @@ function HeroSection({ l }: { l: NovaTr }) {
 
     let isSeeking = false;
     let pendingTime: number | null = null;
+    let seekTimer: ReturnType<typeof setTimeout> | null = null;
 
     const doSeek = (t: number) => {
       if (isSeeking) { pendingTime = t; return; }
-      if (Math.abs(video.currentTime - t) < 0.001) return;
+      if (Math.abs(video.currentTime - t) < 0.016) return; // ~1 frame threshold
       isSeeking = true;
       pendingTime = null;
+      // Safety timeout: if 'seeked' never fires (buffering / browser throttle),
+      // unstick after 250 ms so the animation doesn't freeze.
+      if (seekTimer) clearTimeout(seekTimer);
+      seekTimer = setTimeout(() => {
+        isSeeking = false;
+        if (pendingTime !== null) { const pt = pendingTime; pendingTime = null; doSeek(pt); }
+      }, 250);
       video.currentTime = t;
     };
 
     const onSeeked = () => {
+      if (seekTimer) { clearTimeout(seekTimer); seekTimer = null; }
       isSeeking = false;
-      if (pendingTime !== null) doSeek(pendingTime);
+      if (pendingTime !== null) { const pt = pendingTime; pendingTime = null; doSeek(pt); }
     };
 
     video.addEventListener('seeked', onSeeked);
@@ -158,6 +188,7 @@ function HeroSection({ l }: { l: NovaTr }) {
     scrollRafRef.current = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(scrollRafRef.current);
+      if (seekTimer) clearTimeout(seekTimer);
       video.removeEventListener('seeked', onSeeked);
     };
   }, [videoReady]);
@@ -317,7 +348,7 @@ function DisplaySection({ l }: { l: NovaTr }) {
             src="/nova/front.png" alt="NOVA Display" draggable={false}
             initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }} transition={{ duration: 0.9 }}
-            style={{ width: '100%', maxWidth: 560, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
+            style={{ width: '100%', maxWidth: 760, objectFit: 'contain', filter: 'drop-shadow(0 24px 48px rgba(0,0,0,0.85))' }}
           />
           <motion.div
             initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
@@ -341,11 +372,11 @@ function DisplaySection({ l }: { l: NovaTr }) {
         <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '2%', width: '100%', position: 'relative', zIndex: 1 }}>
 
           {/* Image — scales up as we move to 27" */}
-          <div style={{ flex: '0 0 60%', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ flex: '0 0 68%', display: 'flex', justifyContent: 'center' }}>
             <img
               src="/nova/front.png" alt="NOVA Display" draggable={false}
               style={{
-                width: '100%', maxWidth: 1000, height: 'auto', objectFit: 'contain',
+                width: '100%', maxWidth: 1200, height: 'auto', objectFit: 'contain',
                 filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))',
                 transform: `scale(${imageScale})`,
                 transition: 'transform 0.05s linear',
@@ -465,12 +496,12 @@ function BackSection({ l }: { l: NovaTr }) {
         <motion.div
           initial={{ opacity: 0, x: 32 }} whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }} transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-          style={{ flex: '0 0 46%', display: 'flex', justifyContent: 'center' }}
+          style={{ flex: '0 0 55%', display: 'flex', justifyContent: 'center' }}
         >
           <img
             src="/nova/back.png" alt="NOVA Rear Design"
             draggable={false}
-            style={{ width: '100%', maxWidth: 480, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))' }}
+            style={{ width: '100%', maxWidth: 700, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.9))' }}
           />
         </motion.div>
 
@@ -562,13 +593,13 @@ function CameraAndSoundSection({ l }: { l: NovaTr }) {
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
-          style={{ flex: '0 0 45%', display: 'flex', justifyContent: 'center' }}
+          style={{ flex: '0 0 55%', display: 'flex', justifyContent: 'center' }}
         >
           <img
             src="/nova/webcam.png"
             alt="NOVA Webcam"
             draggable={false}
-            style={{ width: '100%', maxWidth: 440, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.85))' }}
+            style={{ width: '100%', maxWidth: 660, height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 32px 64px rgba(0,0,0,0.85))' }}
           />
         </motion.div>
 
@@ -609,7 +640,7 @@ function CameraAndSoundSection({ l }: { l: NovaTr }) {
 ───────────────────────────────────────────────────────────────────────── */
 const PORTS: { Icon: React.ElementType | string; label: string; spec: string }[] = [
   { Icon: '/icons/hdmi.png', label: 'HDMI 2.0',     spec: 'Video Output'    },
-  { Icon: '/icons/hdmi.png', label: 'DisplayPort',  spec: 'DP 1.4 Output'   },
+  { Icon: '/icons/dp.png',   label: 'DisplayPort',  spec: 'DP 1.4 Output'   },
   { Icon: '/icons/usb.png',  label: 'USB-A ×4',    spec: 'USB 3.2 Gen 1'   },
   { Icon: '/icons/aux.png',  label: '3.5mm',     spec: 'Audio Jack'      },
   { Icon: Wifi,              label: 'Wi-Fi 6',   spec: '802.11ax'        },
@@ -1022,32 +1053,17 @@ function LineupSection({ l }: { l: NovaTr }) {
           }}
         >
           {/* Image area */}
-          <div style={{
-            padding: '52px 40px 28px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            minHeight: 280,
-            position: 'relative',
-            overflow: 'hidden',
-          }}>
+          <div style={{ position: 'relative', overflow: 'hidden', height: 280 }}>
             <div aria-hidden style={{
               position: 'absolute', inset: 0,
               background: 'radial-gradient(ellipse 55% 55% at 50% 65%, rgba(0,102,204,0.13) 0%, transparent 70%)',
-              pointerEvents: 'none',
+              pointerEvents: 'none', zIndex: 1,
             }} />
-            <motion.img
-              whileHover={{ scale: 1.05, transition: { duration: 0.5, ease: [0.16, 1, 0.3, 1] } }}
+            <img
               src="/nova/front.png"
               alt="Bikon NOVA"
-              style={{
-                maxHeight: 360,
-                maxWidth: '100%',
-                objectFit: 'contain',
-                filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.6))',
-                position: 'relative',
-                zIndex: 1,
-              }}
+              draggable={false}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', filter: 'drop-shadow(0 20px 40px rgba(0,0,0,0.6))', display: 'block' }}
             />
           </div>
 
@@ -1472,37 +1488,27 @@ function ClockSVG() {
 /* ── 3D icon wrapper with perspective tilt + hover flatten ── */
 interface IconDef {
   label: string;
-  Svg: () => React.JSX.Element;
+  src: string;
   delay: string;
   pos: React.CSSProperties;
 }
 
 const ICONS_3D: IconDef[] = [
   /* ── Top band ── */
-  { label: 'Windows',   Svg: WinSVG,       delay: '0s',    pos: { top: '4%',              left: '1.5%'  } },
-  { label: 'Word',      Svg: WordSVG,       delay: '0.4s',  pos: { top: '2%',              left: '13%'   } },
-  { label: 'Photos',    Svg: PhotosSVG,     delay: '1.3s',  pos: { top: '1%',              left: '25%'   } },
-  { label: 'Clock',     Svg: ClockSVG,      delay: '1.5s',  pos: { top: '1%',              right: '25%'  } },
-  { label: 'PPT',       Svg: PptSVG,        delay: '0.2s',  pos: { top: '2%',              right: '13%'  } },
-  { label: 'Excel',     Svg: ExcelSVG,      delay: '0.9s',  pos: { top: '4%',              right: '1.5%' } },
+  { label: 'Word',       src: '/icons/windows/Word.png',        delay: '0s',   pos: { top: '4%',               left: '1.5%'  } },
+  { label: 'Excel',      src: '/icons/windows/Excel.png',       delay: '0.4s', pos: { top: '2%',               left: '13%'   } },
+  { label: 'PowerPoint', src: '/icons/windows/Power point.png', delay: '0.9s', pos: { top: '1%',               left: '25%'   } },
+  { label: 'Outlook',    src: '/icons/windows/Outlook.png',     delay: '1.5s', pos: { top: '1%',               right: '25%'  } },
+  { label: 'Teams',      src: '/icons/windows/Teamss.png',      delay: '0.2s', pos: { top: '2%',               right: '13%'  } },
+  { label: 'Edge',       src: '/icons/windows/Edge.png',        delay: '1.1s', pos: { top: '4%',               right: '1.5%' } },
   /* ── Left column ── */
-  { label: 'Notepad',   Svg: NotepadSVG,    delay: '0.8s',  pos: { top: '23%',             left: '1.5%'  } },
-  { label: 'Outlook',   Svg: OutlookSVG,    delay: '0.7s',  pos: { top: 'calc(50% - 50px)',left: '0.8%'  } },
-  { label: 'Weather',   Svg: WeatherSVG,    delay: '1.6s',  pos: { bottom: '23%',          left: '1.5%'  } },
+  { label: 'Notepad',    src: '/icons/windows/Notepad.png',     delay: '0.8s', pos: { top: '23%',              left: '1.5%'  } },
+  { label: 'OneDrive',   src: '/icons/windows/One drive.png',   delay: '0.7s', pos: { top: 'calc(50% - 50px)', left: '0.8%'  } },
   /* ── Right column ── */
-  { label: 'Maps',      Svg: MapsSVG,       delay: '1.8s',  pos: { top: '23%',             right: '1.5%' } },
-  { label: 'Teams',     Svg: TeamsSVG,      delay: '0.5s',  pos: { top: 'calc(50% - 50px)',right: '0.8%' } },
-  { label: 'Xbox',      Svg: XboxSVG,       delay: '1.2s',  pos: { bottom: '23%',          right: '1.5%' } },
+  { label: 'Zoom',       src: '/icons/windows/zoom.png',        delay: '1.2s', pos: { top: '23%',              right: '1.5%' } },
   /* ── Mid-inner ── */
-  { label: 'To Do',     Svg: TodoSVG,       delay: '1.1s',  pos: { top: '37%',             left: '10%'   } },
-  { label: 'Clipchamp', Svg: ClipchampSVG,  delay: '0.6s',  pos: { top: '37%',             right: '10%'  } },
-  /* ── Bottom band ── */
-  { label: 'Edge',      Svg: EdgeSVG,       delay: '1.1s',  pos: { bottom: '4%',           left: '1.5%'  } },
-  { label: 'OneDrive',  Svg: OneDriveSVG,   delay: '0.3s',  pos: { bottom: '2%',           left: '13%'   } },
-  { label: 'Paint',     Svg: PaintSVG,      delay: '1.3s',  pos: { bottom: '1%',           left: '25%'   } },
-  { label: 'Store',     Svg: StoreSVG,      delay: '1.4s',  pos: { bottom: '1%',           right: '25%'  } },
-  { label: 'Snip',      Svg: SnipSVG,       delay: '1.0s',  pos: { bottom: '2%',           right: '13%'  } },
-  { label: 'Calc',      Svg: CalcSVG,       delay: '0.6s',  pos: { bottom: '4%',           right: '1.5%' } },
+  { label: 'Telegram',   src: '/icons/windows/telegram.png',    delay: '1.1s', pos: { top: '37%',              left: '10%'   } },
+  { label: 'Chrome',     src: '/icons/windows/chroma.png',      delay: '0.6s', pos: { top: '37%',              right: '10%'  } },
 ];
 
 function Icon3D({ icon }: { icon: IconDef }) {
@@ -1532,7 +1538,7 @@ function Icon3D({ icon }: { icon: IconDef }) {
         flexShrink: 0,
       }}
     >
-      <icon.Svg />
+      <img src={icon.src} alt={icon.label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
     </div>
   );
 }
@@ -1550,11 +1556,11 @@ function AppsSection({ l }: { l: NovaTr }) {
         padding: '60px 24px',
         gap: 40,
       }}>
-        {/* 3 rows × 4 icons (12 of 20) */}
+        {/* 3 rows of icons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, alignItems: 'center' }}>
-          {[ICONS_3D.slice(0, 4), ICONS_3D.slice(4, 8), ICONS_3D.slice(8, 12)].map((row, ri) => (
+          {[ICONS_3D.slice(0, 4), ICONS_3D.slice(4, 8), ICONS_3D.slice(8, 11)].map((row, ri) => (
             <div key={ri} style={{ display: 'flex', gap: 12 }}>
-              {row.map(({ label, Svg, delay }) => (
+              {row.map(({ label, src, delay }) => (
                 <div
                   key={label}
                   style={{
@@ -1565,7 +1571,7 @@ function AppsSection({ l }: { l: NovaTr }) {
                     flexShrink: 0,
                   }}
                 >
-                  <Svg />
+                  <img src={src} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                 </div>
               ))}
             </div>

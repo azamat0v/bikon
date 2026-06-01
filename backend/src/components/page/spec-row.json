@@ -1,0 +1,13 @@
+{
+  "collectionName": "components_page_spec_rows",
+  "info": {
+    "displayName": "Spec Row",
+    "icon": "layer"
+  },
+  "options": {},
+  "attributes": {
+    "col1": { "type": "string" },
+    "col2": { "type": "string" },
+    "col3": { "type": "string" }
+  }
+}

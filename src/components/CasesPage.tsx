@@ -7,6 +7,7 @@ import SpecsSection from './SpecsSection';
 import { FloatingPathsBackground } from './ui/floating-paths';
 import { useLang } from '../context/LanguageContext';
 import { useShopModal } from '../context/ShopModalContext';
+import { useProductPageCms, cmsToSpecCategories } from '../lib/useProductPageCms';
 
 interface CasesTr {
   hero_eyebrow: string;
@@ -49,7 +50,32 @@ function useIsMobile(bp = 768) {
 ───────────────────────────────────────────────────────────────────────── */
 export default function CasesPage() {
   const { tr } = useLang();
-  const l = (tr as unknown as { cases: CasesTr }).cases;
+  const base = (tr as unknown as { cases: CasesTr }).cases;
+  const cms = useProductPageCms('cases');
+  const cmsSpecs = cmsToSpecCategories(cms);
+
+  const l: CasesTr = {
+    ...base,
+    hero_eyebrow:     cms?.hero_eyebrow     ?? base.hero_eyebrow,
+    hero_title:       cms?.hero_title       ?? base.hero_title,
+    hero_subtitle:    cms?.hero_subtitle    ?? base.hero_subtitle,
+    hero_cta_primary: cms?.hero_cta_primary ?? base.hero_cta_primary,
+    hero_cta_secondary: cms?.hero_cta_secondary ?? base.hero_cta_secondary,
+    models_eyebrow:   cms?.lineup_eyebrow   ?? base.models_eyebrow,
+    models_title:     cms?.lineup_title     ?? base.models_title,
+    models: cms?.models?.length
+      ? cms.models.map((m, i) => ({
+          name:  m.name  ?? base.models[i]?.name  ?? '',
+          tag:   m.tag   ?? base.models[i]?.tag   ?? '',
+          desc:  m.description ?? base.models[i]?.desc ?? '',
+          specs: (m.specs as string[] | null) ?? base.models[i]?.specs ?? [],
+        }))
+      : base.models,
+    specs_eyebrow:     cms?.specs_eyebrow ?? base.specs_eyebrow,
+    specs_title:       cms?.specs_title   ?? base.specs_title,
+    specs_label:       cms?.specs_label   ?? base.specs_label,
+    specs_categories:  cmsSpecs           ?? base.specs_categories,
+  };
 
   return (
     <div className="bg-black min-h-screen" style={{ overflowX: 'clip' }}>
