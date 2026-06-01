@@ -140,34 +140,30 @@ function HeroSection({ l }: { l: NovaTr }) {
   const isMobile     = useIsMobile();
   const [videoReady, setVideoReady] = useState(false);
 
+  // Unlock seeking immediately when video is ready.
+  // muted+playsInline allows play() without user gesture on iOS.
+  const handleCanPlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().then(() => {
+      video.pause();
+      video.currentTime = 0;
+      setVideoReady(true);
+    }).catch(() => setVideoReady(true));
+  };
+
   useEffect(() => {
     if (!videoReady) return;
     const video = videoRef.current;
-    if (!video) return;
-
-    let unlocked = false;
-
-    // iOS blocks currentTime until the user has interacted and play() was called.
-    // Unlock on the very first scroll or touch event.
-    const unlock = () => {
-      if (unlocked) return;
-      unlocked = true;
-      video.play().then(() => {
-        video.pause();
-        video.currentTime = 0;
-      }).catch(() => {});
-    };
-    window.addEventListener('scroll', unlock, { once: true, passive: true });
-    window.addEventListener('touchstart', unlock, { once: true, passive: true });
+    if (!video || video.duration === 0) return;
 
     const tick = () => {
       const el = containerRef.current;
-      if (el && video.readyState >= 2 && video.duration > 0) {
+      if (el && video.duration > 0) {
         const scrolled = -el.getBoundingClientRect().top;
         const max = el.offsetHeight - window.innerHeight;
         if (max > 0) {
           const p = Math.max(0, Math.min(1, scrolled / max));
-          if (!video.paused) video.pause();
           video.currentTime = p * video.duration;
         }
       }
@@ -175,11 +171,7 @@ function HeroSection({ l }: { l: NovaTr }) {
     };
 
     scrollRafRef.current = requestAnimationFrame(tick);
-    return () => {
-      cancelAnimationFrame(scrollRafRef.current);
-      window.removeEventListener('scroll', unlock);
-      window.removeEventListener('touchstart', unlock);
-    };
+    return () => { cancelAnimationFrame(scrollRafRef.current); };
   }, [videoReady]);
 
   return (
@@ -200,7 +192,7 @@ function HeroSection({ l }: { l: NovaTr }) {
               muted
               playsInline
               preload="auto"
-              onLoadedMetadata={() => setVideoReady(true)}
+              onCanPlay={handleCanPlay}
               style={{ flex: 1, width: '100%', minHeight: 0, objectFit: 'contain', display: 'block' }}
             />
             {/* Text below */}
@@ -289,7 +281,7 @@ function HeroSection({ l }: { l: NovaTr }) {
                 muted
                 playsInline
                 preload="auto"
-                onLoadedMetadata={() => setVideoReady(true)}
+                onCanPlay={handleCanPlay}
                 style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center 35%', display: 'block' }}
               />
             </div>
