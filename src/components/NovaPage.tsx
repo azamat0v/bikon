@@ -203,7 +203,7 @@ function HeroSection({ l }: { l: NovaTr }) {
         />
 
         {isMobile ? (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', padding: '100px 24px 0', position: 'relative', zIndex: 1 }}>
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', padding: '100px 24px 24px', boxSizing: 'border-box', position: 'relative', zIndex: 1 }}>
             <motion.div
               initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
