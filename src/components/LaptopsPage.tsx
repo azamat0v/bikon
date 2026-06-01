@@ -256,7 +256,7 @@ function HeroSection({ l }: { l: LaptopsTr }) {
         const done = () => {
           total++;
           setLoaded(total);
-          if (total === FRAME_COUNT && mounted) setSeqReady(true);
+          // seqReady is now set after first batch — no longer needed here
           resolve();
         };
         img.onload  = () => { if (mounted) framesRef.current[i] = img; done(); };
@@ -277,7 +277,10 @@ function HeroSection({ l }: { l: LaptopsTr }) {
         await Promise.all(
           Array.from({ length: Math.min(BATCH_SIZE, FRAME_COUNT - i) }, (_, j) => loadOne(i + j))
         );
-        if (i === 0 && mounted) drawFrame(0);
+        if (!mounted) break;
+        drawFrame(0);
+        // Show canvas after first batch — remaining frames load in background
+        if (i === 0) setSeqReady(true);
       }
     };
     run();
