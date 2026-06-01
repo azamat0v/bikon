@@ -173,7 +173,7 @@ export default function Navbar() {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                if (isAboutPage) { navigate('/'); return; }
+                if (page !== '/') { navigate('/'); return; }
                 scrollTo(e as React.MouseEvent<HTMLAnchorElement>, 'home');
               }}
               className="flex-shrink-0 select-none transition-all duration-300 hover:scale-105 hover:opacity-75"
