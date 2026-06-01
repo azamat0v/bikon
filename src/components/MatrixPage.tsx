@@ -157,6 +157,9 @@ function HeroSection({ l }: { l: MatrixTr }) {
             flex: 1,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
             padding: isMobile ? '100px 24px 40px' : '0 20% 0 10%',
+            width: isMobile ? '100vw' : undefined,
+            maxWidth: isMobile ? '100vw' : undefined,
+            boxSizing: 'border-box' as const,
           }}
         >
           <span style={{
@@ -170,8 +173,9 @@ function HeroSection({ l }: { l: MatrixTr }) {
             color: '#fff', whiteSpace: 'pre-line', marginBottom: 24,
           }}>{l.hero_title}</h1>
           <p style={{
-            fontSize: isMobile ? 16 : 'clamp(15px, 1.5vw, 19px)',
-            color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, marginBottom: 44, maxWidth: 440,
+            fontSize: isMobile ? 15 : 'clamp(15px, 1.5vw, 19px)',
+            color: 'rgba(255,255,255,0.45)', lineHeight: 1.7, marginBottom: 44,
+            maxWidth: isMobile ? '100%' : 440,
           }}>{l.hero_subtitle}</p>
           <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
             <motion.button

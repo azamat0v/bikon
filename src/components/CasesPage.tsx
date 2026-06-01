@@ -146,7 +146,9 @@ function HeroSection({ l }: { l: CasesTr }) {
       />
       <div style={{
         position: 'relative', zIndex: 3,
-        maxWidth: 820,
+        maxWidth: isMobile ? 'calc(100vw - 0px)' : 820,
+        width: isMobile ? '100vw' : '100%',
+        boxSizing: 'border-box' as const,
         padding: isMobile ? '120px 24px 80px' : '0 10%',
         display: 'flex', flexDirection: 'column',
       }}>
@@ -177,7 +179,8 @@ function HeroSection({ l }: { l: CasesTr }) {
           style={{
             fontSize: isMobile ? 15 : 17,
             color: 'rgba(255,255,255,0.50)', lineHeight: 1.7,
-            maxWidth: 520, marginBottom: 48,
+            width: '100%', maxWidth: 520, marginBottom: 48,
+            overflowWrap: 'break-word' as const,
           }}
         >{l.hero_subtitle}</motion.p>
 

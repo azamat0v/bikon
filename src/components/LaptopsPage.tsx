@@ -382,7 +382,7 @@ function HeroSection({ l }: { l: LaptopsTr }) {
           position: 'absolute', bottom: '9%', left: '50%', zIndex: 10,
           transform: `translateX(-50%) translateY(${textYpx}px)`,
           textAlign: 'center', opacity: textOp,
-          width: '100%', maxWidth: 680, padding: '0 24px',
+          width: '100%', maxWidth: 680, padding: '0 24px', boxSizing: 'border-box' as const,
           pointerEvents: textOp > 0.1 ? undefined : 'none',
         }}>
           <span style={{
