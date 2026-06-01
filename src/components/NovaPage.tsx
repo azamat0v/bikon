@@ -203,38 +203,8 @@ function HeroSection({ l }: { l: NovaTr }) {
         />
 
         {isMobile ? (
-          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', padding: '100px 24px 24px', boxSizing: 'border-box', position: 'relative', zIndex: 1 }}>
-            <motion.div
-              initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <h1 style={{
-                fontSize: 'clamp(40px, 12vw, 72px)', fontWeight: 900,
-                letterSpacing: '-0.05em', lineHeight: 1.04,
-                color: '#fff', whiteSpace: 'pre-line', marginBottom: 20,
-              }}>{l.hero_title}</h1>
-              <p style={{
-                fontSize: 16, color: 'rgba(255,255,255,0.48)', lineHeight: 1.7, marginBottom: 36,
-              }}>{l.hero_subtitle}</p>
-              <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', marginBottom: 32 }}>
-                <button
-                  onClick={() => document.getElementById('nova-features')?.scrollIntoView({ behavior: 'smooth' })}
-                  style={{
-                    background: '#fff', color: '#000', padding: '13px 28px',
-                    borderRadius: 12, fontSize: 13, fontWeight: 700,
-                    border: 'none', cursor: 'pointer', letterSpacing: '-0.01em',
-                  }}
-                >{l.hero_cta_primary}</button>
-                <button
-                  onClick={() => document.getElementById('specs')?.scrollIntoView({ behavior: 'smooth' })}
-                  style={{
-                    background: 'transparent', color: 'rgba(255,255,255,0.6)',
-                    padding: '12px 24px', borderRadius: 12, fontSize: 13, fontWeight: 600,
-                    border: '1.5px solid rgba(255,255,255,0.14)', cursor: 'pointer', letterSpacing: '-0.01em',
-                  }}
-                >{l.hero_cta_secondary}</button>
-              </div>
-            </motion.div>
+          <div style={{ width: '100%', height: '100%', display: 'flex', flexDirection: 'column', paddingTop: 72, boxSizing: 'border-box', position: 'relative', zIndex: 1 }}>
+            {/* Video first */}
             <video
               ref={videoRef}
               src="/nova/hero.mp4"
@@ -244,6 +214,39 @@ function HeroSection({ l }: { l: NovaTr }) {
               onLoadedMetadata={() => setVideoReady(true)}
               style={{ flex: 1, width: '100%', minHeight: 0, objectFit: 'contain', display: 'block' }}
             />
+            {/* Text below */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              style={{ padding: '20px 24px 32px', flexShrink: 0 }}
+            >
+              <h1 style={{
+                fontSize: 'clamp(28px, 8vw, 48px)', fontWeight: 900,
+                letterSpacing: '-0.05em', lineHeight: 1.06,
+                color: '#fff', whiteSpace: 'pre-line', marginBottom: 12,
+              }}>{l.hero_title}</h1>
+              <p style={{
+                fontSize: 14, color: 'rgba(255,255,255,0.48)', lineHeight: 1.65, marginBottom: 20,
+              }}>{l.hero_subtitle}</p>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <button
+                  onClick={() => document.getElementById('nova-features')?.scrollIntoView({ behavior: 'smooth' })}
+                  style={{
+                    background: '#fff', color: '#000', padding: '11px 24px',
+                    borderRadius: 10, fontSize: 13, fontWeight: 700,
+                    border: 'none', cursor: 'pointer', letterSpacing: '-0.01em',
+                  }}
+                >{l.hero_cta_primary}</button>
+                <button
+                  onClick={() => document.getElementById('specs')?.scrollIntoView({ behavior: 'smooth' })}
+                  style={{
+                    background: 'transparent', color: 'rgba(255,255,255,0.6)',
+                    padding: '10px 22px', borderRadius: 10, fontSize: 13, fontWeight: 600,
+                    border: '1.5px solid rgba(255,255,255,0.14)', cursor: 'pointer', letterSpacing: '-0.01em',
+                  }}
+                >{l.hero_cta_secondary}</button>
+              </div>
+            </motion.div>
           </div>
         ) : (
           <div style={{ display: 'flex', width: '100%', height: '100%', position: 'relative', zIndex: 1 }}>
