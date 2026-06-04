@@ -1,6 +1,9 @@
 Options -MultiViews
 RewriteEngine On
 
+# Redirect /admin to Strapi admin on Railway
+RewriteRule ^admin(/.*)?$ https://bikon-production.up.railway.app/admin$1 [R=302,L]
+
 # Serve real files directly (JS, CSS, images, etc.)
 RewriteCond %{REQUEST_FILENAME} -f
 RewriteRule ^ - [L]

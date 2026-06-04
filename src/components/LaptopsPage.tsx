@@ -576,8 +576,9 @@ function DesignCanvas({ sectionRef }: { sectionRef: React.RefObject<HTMLElement 
   const rafDrawRef   = useRef<number>(0);
   const progRef      = useRef(0);
 
-  const [loaded,   setLoaded]   = useState(0);
-  const [seqReady, setSeqReady] = useState(false);
+  const [loaded,     setLoaded]     = useState(0);
+  const [seqReady,   setSeqReady]   = useState(false);
+  const [startLoad,  setStartLoad]  = useState(false);
 
   /* ── canvas HiDPI setup ─────────────────────────────────────────── */
   const setupCanvas = useCallback(() => {
@@ -604,6 +605,23 @@ function DesignCanvas({ sectionRef }: { sectionRef: React.RefObject<HTMLElement 
     ro.observe(canvasRef.current);
     return () => { ro.disconnect(); ctxRef.current = null; };
   }, [setupCanvas]);
+
+  /* ── defer frame loading until section is near viewport ──────────── */
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStartLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '0px 0px 400px 0px' },
+    );
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, [sectionRef]);
 
   /* ── draw one frame ─────────────────────────────────────────────── */
   const drawFrame = useCallback((rawIdx: number) => {
@@ -654,8 +672,9 @@ function DesignCanvas({ sectionRef }: { sectionRef: React.RefObject<HTMLElement 
     };
   }, [seqReady, drawFrame, sectionRef]);
 
-  /* ── batch-load frames ──────────────────────────────────────────── */
+  /* ── batch-load frames (deferred until section is near viewport) ── */
   useEffect(() => {
+    if (!startLoad) return;
     let mounted = true;
     let total   = 0;
     const loadOne = (i: number) =>
@@ -665,7 +684,6 @@ function DesignCanvas({ sectionRef }: { sectionRef: React.RefObject<HTMLElement 
         const done = () => {
           total++;
           setLoaded(total);
-          if (total === HD_FRAME_COUNT && mounted) setSeqReady(true);
           resolve();
         };
         img.onload  = () => { if (mounted) framesRef.current[i] = img; done(); };
@@ -678,7 +696,9 @@ function DesignCanvas({ sectionRef }: { sectionRef: React.RefObject<HTMLElement 
         await Promise.all(
           Array.from({ length: Math.min(HD_BATCH, HD_FRAME_COUNT - i) }, (_, j) => loadOne(i + j))
         );
-        if (i === 0 && mounted) drawFrame(0);
+        if (!mounted) break;
+        drawFrame(0);
+        if (i === 0) setSeqReady(true);
       }
     };
     run();
@@ -686,7 +706,7 @@ function DesignCanvas({ sectionRef }: { sectionRef: React.RefObject<HTMLElement 
       mounted = false;
       framesRef.current = new Array(HD_FRAME_COUNT).fill(null);
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [startLoad, drawFrame]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => { if (seqReady) drawFrame(0); }, [seqReady, drawFrame]);
 
