@@ -927,6 +927,39 @@ async function seedAboutPageLocale(
   console.log(`[seed] about-page ${locale} created`);
 }
 
+async function grantPublicPermissions(strapi: Core.Strapi) {
+  const publicRole = await strapi.db.query('plugin::users-permissions.role').findOne({
+    where: { type: 'public' },
+    populate: ['permissions'],
+  }) as any;
+
+  if (!publicRole) return;
+
+  const existing = new Set(
+    (publicRole.permissions as any[]).map((p: any) => p.action),
+  );
+
+  const actions = [
+    'api::product-page.product-page.find',
+    'api::product-page.product-page.findOne',
+    'api::about-page.about-page.find',
+    'api::about-page.about-page.findOne',
+    'api::site-product.site-product.find',
+    'api::site-product.site-product.findOne',
+    'api::article.article.find',
+    'api::article.article.findOne',
+  ];
+
+  for (const action of actions) {
+    if (!existing.has(action)) {
+      await strapi.db.query('plugin::users-permissions.permission').create({
+        data: { action, role: publicRole.id, enabled: true },
+      });
+      console.log(`[seed] public permission granted: ${action}`);
+    }
+  }
+}
+
 async function ensureLocales(strapi: Core.Strapi) {
   const needed = [
     { code: 'ru', name: 'Russian (ru)' },
@@ -945,6 +978,7 @@ export default {
   register() {},
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    await grantPublicPermissions(strapi);
     await ensureLocales(strapi);
     await seedProductPages(strapi);
     await seedAboutPage(strapi);
