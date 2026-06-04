@@ -36,7 +36,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
             database: u.pathname.replace(/^\//, ''),
             user:     u.username,
             password: u.password,
-            ssl:      false,
+            ssl:      { rejectUnauthorized: false },
             schema:   env('DATABASE_SCHEMA', 'public'),
           };
         }
@@ -46,7 +46,7 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
           database: env('DATABASE_NAME', 'strapi'),
           user:     env('DATABASE_USERNAME', 'strapi'),
           password: env('DATABASE_PASSWORD', 'strapi'),
-          ssl:      false,
+          ssl:      { rejectUnauthorized: false },
           schema:   env('DATABASE_SCHEMA', 'public'),
         };
       })(),
