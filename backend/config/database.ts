@@ -24,32 +24,15 @@ const config = ({ env }: Core.Config.Shared.ConfigParams): Core.Config.Database 
       pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
     },
     postgres: {
-      connection: (() => {
-        const url = env('DATABASE_URL', '');
-        if (url) {
-          // Parse DATABASE_URL manually so we can force ssl:false,
-          // overriding any ?sslmode=require embedded in the URL.
-          const u = new URL(url);
-          return {
-            host:     u.hostname,
-            port:     parseInt(u.port || '5432', 10),
-            database: u.pathname.replace(/^\//, ''),
-            user:     u.username,
-            password: u.password,
-            ssl:      { rejectUnauthorized: false },
-            schema:   env('DATABASE_SCHEMA', 'public'),
-          };
-        }
-        return {
-          host:     env('DATABASE_HOST', 'localhost'),
-          port:     env.int('DATABASE_PORT', 5432),
-          database: env('DATABASE_NAME', 'strapi'),
-          user:     env('DATABASE_USERNAME', 'strapi'),
-          password: env('DATABASE_PASSWORD', 'strapi'),
-          ssl:      { rejectUnauthorized: false },
-          schema:   env('DATABASE_SCHEMA', 'public'),
-        };
-      })(),
+      connection: {
+        host:     env('PGHOST')     || env('DATABASE_HOST',     'localhost'),
+        port:     Number(env('PGPORT')     || env('DATABASE_PORT',     '5432')),
+        database: env('PGDATABASE') || env('DATABASE_NAME',     'strapi'),
+        user:     env('PGUSER')     || env('DATABASE_USERNAME', 'strapi'),
+        password: env('PGPASSWORD') || env('DATABASE_PASSWORD', ''),
+        ssl:      { rejectUnauthorized: false },
+        schema:   env('DATABASE_SCHEMA', 'public'),
+      },
       pool: { min: env.int('DATABASE_POOL_MIN', 2), max: env.int('DATABASE_POOL_MAX', 10) },
     },
     sqlite: {
