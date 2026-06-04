@@ -927,10 +927,25 @@ async function seedAboutPageLocale(
   console.log(`[seed] about-page ${locale} created`);
 }
 
+async function ensureLocales(strapi: Core.Strapi) {
+  const needed = [
+    { code: 'ru', name: 'Russian (ru)' },
+    { code: 'uz', name: "O'zbek (uz)" },
+  ];
+  for (const { code, name } of needed) {
+    const exists = await strapi.db.query('plugin::i18n.locale').findOne({ where: { code } });
+    if (!exists) {
+      await strapi.db.query('plugin::i18n.locale').create({ data: { name, code } });
+      console.log(`[seed] locale created: ${code}`);
+    }
+  }
+}
+
 export default {
   register() {},
 
   async bootstrap({ strapi }: { strapi: Core.Strapi }) {
+    await ensureLocales(strapi);
     await seedProductPages(strapi);
     await seedAboutPage(strapi);
 
