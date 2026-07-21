@@ -88,6 +88,7 @@ export default function AboutPage() {
   const cmsStats = cms?.stats as { number: string; label: string }[] | null;
   const ab = {
     ...base,
+    ...(cms?.extra ?? {}),
     ...(cms?.hero_eyebrow  && { badge:       cms.hero_eyebrow }),
     ...(cms?.hero_subtitle && { hero_sub:    cms.hero_subtitle }),
     ...(cms?.story_eyebrow && { story_label: cms.story_eyebrow }),
@@ -100,6 +101,8 @@ export default function AboutPage() {
     ...(cms?.milestones && { history_milestones: cms.milestones }),
     ...(cms?.final_quote && { final_quote:       cms.final_quote }),
     ...(cms?.founder_image && { founder_image:   mediaUrl(cms.founder_image.url) }),
+    founder_name:  cms?.founder_name  ?? 'Golib Obiddinovich\nAvezov',
+    founder_title: cms?.founder_title ?? 'Founder',
   };
 
   useSeo({
@@ -393,14 +396,15 @@ export default function AboutPage() {
             </div>
 
             {/* Founder label + name */}
-            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.48)', marginBottom: 10 }}>Founder</p>
+            <p style={{ fontSize: 12, fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase' as const, color: 'rgba(255,255,255,0.48)', marginBottom: 10 }}>{ab.founder_title}</p>
             <h2 style={{
               fontSize: 'clamp(32px, 4vw, 54px)', fontWeight: 800,
               letterSpacing: '-0.045em', lineHeight: 1.06,
               color: '#fff', marginBottom: 20,
               fontFamily: '"Inter", sans-serif',
+              whiteSpace: 'pre-line',
             }}>
-              Golib Obiddinovich<br />Avezov
+              {ab.founder_name}
             </h2>
 
             {/* Meta pills */}

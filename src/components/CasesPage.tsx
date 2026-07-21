@@ -54,9 +54,11 @@ export default function CasesPage() {
   const base = (tr as unknown as { cases: CasesTr }).cases;
   const cms = useProductPageCms('cases');
   const cmsSpecs = cmsToSpecCategories(cms);
+  const extra = (cms?.extra as Partial<CasesTr>) ?? {};
 
   const l: CasesTr = {
     ...base,
+    ...extra,
     hero_eyebrow:     cms?.hero_eyebrow     ?? base.hero_eyebrow,
     hero_title:       cms?.hero_title       ?? base.hero_title,
     hero_subtitle:    cms?.hero_subtitle    ?? base.hero_subtitle,

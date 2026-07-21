@@ -160,6 +160,8 @@ export interface ProductPageCms {
   specs_title: string | null;
   specs_label: string | null;
   spec_categories: CmsSpecCategory[];
+  /** Remaining page sections (features, cta, bento, display, connectivity, etc.) not yet modeled as dedicated fields. */
+  extra: Record<string, unknown> | null;
 }
 
 /** Fetch CMS content for a product page by slug. Returns null if not found or on error. */
@@ -198,6 +200,8 @@ export interface AboutPageCms {
   founder_image: { url: string; alternativeText: string | null } | null;
   founder_name: string | null;
   founder_title: string | null;
+  /** Remaining page sections (mission, what-we-do, why-choose, history, revenue, etc.) not yet modeled as dedicated fields. */
+  extra: Record<string, unknown> | null;
 }
 
 /** Fetch CMS content for the About page. Returns null if not published or on error. */

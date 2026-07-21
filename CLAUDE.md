@@ -88,7 +88,7 @@ LanguageProvider
 
 ### ShopModal
 
-`ShopModalContext` exposes `useShopModal()` → `{ open(product?: string) }`. Calling `open()` raises a multi-step modal (call → Telegram form → success/error). The modal submits leads to a Telegram bot; credentials (`TG_TOKEN`, `TG_CHAT`) are **hardcoded** and not env-driven. The same credentials are duplicated in `CTASection.tsx`, `B2BPage.tsx`, and `CareersPage.tsx`.
+`ShopModalContext` exposes `useShopModal()` → `{ open(product?: string) }`. Calling `open()` raises a multi-step modal (call → Telegram form → success/error). The modal submits leads to a Telegram bot using `VITE_TG_TOKEN` / `VITE_TG_CHAT` env vars. The same two env vars are read independently in `CTASection.tsx`, `B2BPage.tsx`, and `CareersPage.tsx` (each redeclares its own `TG_TOKEN`/`TG_CHAT` constants rather than sharing a module).
 
 ### Internationalization
 
@@ -164,20 +164,24 @@ All lazy-loaded sub-pages use a black `minHeight: 100vh` fallback during `<Suspe
 
 ## CMS Integration (Strapi)
 
-The home page's `ProductSection` data and the blog are powered by Strapi v5. The client lives in [src/lib/strapi.ts](src/lib/strapi.ts).
+Home page products, all seven product pages, the About page, and the blog are all powered by Strapi v5. The client lives in [src/lib/strapi.ts](src/lib/strapi.ts); in every case CMS data takes priority and missing/failed CMS data falls back to hard-coded translations silently (`.catch()` resolves to `null`/`[]`).
 
-- **Products**: `getProducts(locale)` — fetches `site-products` collection; `category_id` matches `BASE_PRODUCTS` ids (`noutbuklar`, `monobloklar`, `cases`, `monitorlar`). CMS data takes priority over hard-coded translations; missing CMS data falls back to translations silently.
+- **Home products**: `getProducts(locale)` — fetches `site-products` collection; `category_id` matches `BASE_PRODUCTS` ids (`noutbuklar`, `monobloklar`, `cases`, `monitorlar`).
+- **Product pages**: `useProductPageCms(slug)` (from [src/lib/useProductPageCms.ts](src/lib/useProductPageCms.ts)) fetches the `product-pages` collection by `slug` (`monitors` | `laptops` | `aios` | `nova` | `matrix` | `optima` | `cases`) and returns hero copy, `models` (lineup cards with image/video), and `spec_categories`. Used by `MonitorsPage`, `LaptopsPage`, `AiosPage`, `NovaPage`, `MatrixPage`, `OptimaPage`, `CasesPage`. Pair with `cmsToSpecCategories(cms)` to convert `spec_categories` into the `SpecsSection` `categories` prop shape.
+- **About page**: `useAboutPageCms()` fetches the singleton `about-page` endpoint (hero, story, stats, values, milestones, founder info).
 - **Blog articles**: `getArticles(locale)` / `getArticleBySlug(slug, locale)` — fetches `articles` collection with `cover` populated. Content is Strapi v5 rich-text (`BlockNode[]`), rendered in `BlogPage`.
 - **Media URLs**: always pass through `mediaUrl(url)` — prepends `VITE_STRAPI_URL` for relative paths.
 
 ## Environment Variables
 
-Create a `.env` file in the project root (no `.env.example` exists):
+Copy `.env.example` to `.env` in the project root and fill in:
 
 ```
 GEMINI_API_KEY=    # Google Gemini AI API key (defined via Vite; not yet used in source)
 APP_URL=           # Deployed app URL (e.g. https://bikon.uz)
 VITE_STRAPI_URL=   # Strapi v5 base URL (defaults to http://localhost:1337)
+VITE_TG_TOKEN=     # Telegram bot token — used by ShopModal, CTASection, B2BPage, CareersPage
+VITE_TG_CHAT=      # Telegram chat/channel id leads are sent to
 ```
 
 ## Public Assets
@@ -203,7 +207,8 @@ public/
 
 ## Utilities
 
-`src/lib/utils.ts` exports a single `cn(...inputs: ClassValue[])` helper (clsx + tailwind-merge) for conditional className merging. Use it anywhere you'd otherwise write `clsx(...)` or need Tailwind class deduplication.
+- `src/lib/utils.ts` exports a single `cn(...inputs: ClassValue[])` helper (clsx + tailwind-merge) for conditional className merging. Use it anywhere you'd otherwise write `clsx(...)` or need Tailwind class deduplication.
+- `src/lib/useSeo.ts` exports `useSeo({ title, description, url?, image?, type? })` — imperatively sets `document.title` and `og:*`/`canonical` meta tags on mount, restoring site defaults on unmount. Called by every product/content page (`MonitorsPage`, `LaptopsPage`, `BlogPage`, etc.) for per-page metadata.
 
 ## Behavioral Notes
 

@@ -55,9 +55,11 @@ export default function AiosPage() {
   const { tr } = useLang();
   const base = (tr as unknown as { aios: AiosTr }).aios;
   const cms = useProductPageCms('aios');
+  const extra = (cms?.extra as Partial<AiosTr>) ?? {};
 
   const l: AiosTr = {
     ...base,
+    ...extra,
     hero_eyebrow:       cms?.hero_eyebrow       ?? base.hero_eyebrow,
     hero_title:         cms?.hero_title         ?? base.hero_title,
     hero_subtitle:      cms?.hero_subtitle      ?? base.hero_subtitle,

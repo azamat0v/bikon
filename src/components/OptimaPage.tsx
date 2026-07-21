@@ -72,9 +72,11 @@ export default function OptimaPage() {
   const base = (tr as unknown as { optima: OptimaTr }).optima;
   const cms = useProductPageCms('optima');
   const cmsSpecs = cmsToSpecCategories(cms);
+  const extra = (cms?.extra as Partial<OptimaTr>) ?? {};
 
   const l: OptimaTr = {
     ...base,
+    ...extra,
     hero_eyebrow:       cms?.hero_eyebrow       ?? base.hero_eyebrow,
     hero_title:         cms?.hero_title         ?? base.hero_title,
     hero_subtitle:      cms?.hero_subtitle      ?? base.hero_subtitle,

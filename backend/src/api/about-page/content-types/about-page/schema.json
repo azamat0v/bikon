@@ -67,6 +67,10 @@
     "founder_title": {
       "type": "string",
       "pluginOptions": { "i18n": { "localized": true } }
+    },
+    "extra": {
+      "type": "json",
+      "pluginOptions": { "i18n": { "localized": true } }
     }
   }
 }

@@ -81,9 +81,11 @@ export default function MonitorsPage() {
   const base = tr.monitors as MonitorsTr;
   const cms = useProductPageCms('monitors');
   const cmsSpecs = cmsToSpecCategories(cms);
+  const extra = (cms?.extra as Partial<MonitorsTr>) ?? {};
 
   const m: MonitorsTr = {
     ...base,
+    ...extra,
     hero_eyebrow:       cms?.hero_eyebrow       ?? base.hero_eyebrow,
     hero_title:         cms?.hero_title         ?? base.hero_title,
     hero_subtitle:      cms?.hero_subtitle      ?? base.hero_subtitle,

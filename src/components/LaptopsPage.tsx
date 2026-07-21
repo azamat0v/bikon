@@ -76,9 +76,11 @@ export default function LaptopsPage() {
   const base = tr.laptops as LaptopsTr;
   const cms = useProductPageCms('laptops');
   const cmsSpecs = cmsToSpecCategories(cms);
+  const extra = (cms?.extra as Partial<LaptopsTr>) ?? {};
 
   const l: LaptopsTr = {
     ...base,
+    ...extra,
     hero_eyebrow:         cms?.hero_eyebrow       ?? base.hero_eyebrow,
     hero_title:           cms?.hero_title         ?? base.hero_title,
     hero_subtitle:        cms?.hero_subtitle      ?? base.hero_subtitle,

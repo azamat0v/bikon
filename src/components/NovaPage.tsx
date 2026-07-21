@@ -77,9 +77,11 @@ export default function NovaPage() {
   const base = (tr as unknown as { nova: NovaTr }).nova;
   const cms = useProductPageCms('nova');
   const cmsSpecs = cmsToSpecCategories(cms);
+  const extra = (cms?.extra as Partial<NovaTr>) ?? {};
 
   const l: NovaTr = {
     ...base,
+    ...extra,
     hero_eyebrow:       cms?.hero_eyebrow       ?? base.hero_eyebrow,
     hero_title:         cms?.hero_title         ?? base.hero_title,
     hero_subtitle:      cms?.hero_subtitle      ?? base.hero_subtitle,

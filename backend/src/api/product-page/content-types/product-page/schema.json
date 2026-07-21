@@ -77,6 +77,10 @@
       "repeatable": true,
       "component": "page.spec-category",
       "pluginOptions": { "i18n": { "localized": true } }
+    },
+    "extra": {
+      "type": "json",
+      "pluginOptions": { "i18n": { "localized": true } }
     }
   }
 }
