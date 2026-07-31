@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { useState, type FormEvent } from 'react';
 import { Cpu, Phone, Wallet, Target, CheckCircle, AlertCircle, Send } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
+import { useHomePageCms } from '../lib/useProductPageCms';
 
 const TG_TOKEN = import.meta.env.VITE_TG_TOKEN as string;
 const TG_CHAT  = import.meta.env.VITE_TG_CHAT as string;
@@ -34,7 +35,9 @@ type Step = 'form' | 'success' | 'error';
 
 export default function CTASection() {
   const { tr } = useLang();
-  const c = (tr as unknown as { buildpc: BuildPcTr }).buildpc;
+  const cms = useHomePageCms();
+  const base = (tr as unknown as { buildpc: BuildPcTr }).buildpc;
+  const c: BuildPcTr = { ...base, ...((cms?.buildpc as Partial<BuildPcTr>) ?? {}) };
 
   const [step,    setStep]    = useState<Step>('form');
   const [name,    setName]    = useState('');

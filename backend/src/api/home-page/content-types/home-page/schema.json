@@ -1,0 +1,34 @@
+{
+  "kind": "singleType",
+  "collectionName": "home_page",
+  "info": {
+    "singularName": "home-page",
+    "pluralName": "home-pages",
+    "displayName": "Home Page",
+    "description": "Content for the Home page (Hero, Category Grid, Trust section, Build-Your-PC CTA)"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": { "localized": true }
+  },
+  "attributes": {
+    "hero": {
+      "type": "json",
+      "pluginOptions": { "i18n": { "localized": true } }
+    },
+    "categories": {
+      "type": "json",
+      "pluginOptions": { "i18n": { "localized": true } }
+    },
+    "trust": {
+      "type": "json",
+      "pluginOptions": { "i18n": { "localized": true } }
+    },
+    "buildpc": {
+      "type": "json",
+      "pluginOptions": { "i18n": { "localized": true } }
+    }
+  }
+}

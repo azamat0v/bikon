@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLang } from '../context/LanguageContext';
-import { getProductPage, getAboutPage, type ProductPageCms, type ProductPageSlug, type AboutPageCms } from './strapi';
+import { getProductPage, getAboutPage, getHomePage, type ProductPageCms, type ProductPageSlug, type AboutPageCms, type HomePageCms } from './strapi';
 
 export function useProductPageCms(slug: ProductPageSlug): ProductPageCms | null {
   const { lang } = useLang();
@@ -19,6 +19,17 @@ export function useAboutPageCms(): AboutPageCms | null {
 
   useEffect(() => {
     getAboutPage(lang).then(setCms).catch(() => setCms(null));
+  }, [lang]);
+
+  return cms;
+}
+
+export function useHomePageCms(): HomePageCms | null {
+  const { lang } = useLang();
+  const [cms, setCms] = useState<HomePageCms | null>(null);
+
+  useEffect(() => {
+    getHomePage(lang).then(setCms).catch(() => setCms(null));
   }, [lang]);
 
   return cms;

@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { motion } from 'motion/react';
 import { Wrench, Award, ShieldCheck, Truck, type LucideIcon } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
+import { useHomePageCms } from '../lib/useProductPageCms';
 
-/* ── Icons only — text comes from tr.trust.features at render time ────────── */
+/* ── Icons only — text comes from trust.features at render time ────────── */
 const ICONS = [Wrench, Award, ShieldCheck, Truck];
 
 
@@ -149,7 +150,9 @@ function AdvantageCard({
 /* ── Section ─────────────────────────────────────────────────────────────── */
 export default function TrustSection() {
   const { tr } = useLang();
-  const feats = tr.trust.features;
+  const cms = useHomePageCms();
+  const trust = { ...tr.trust, ...((cms?.trust as Partial<typeof tr.trust>) ?? {}) };
+  const feats = trust.features;
   return (
     <section
       style={{ background: '#FFFFFF', paddingTop: 96, paddingBottom: 112 }}
@@ -207,7 +210,7 @@ export default function TrustSection() {
                   display: 'inline-block',
                 }}
               />
-              {tr.trust.eyebrow}
+              {trust.eyebrow}
             </span>
           </motion.div>
 
@@ -225,8 +228,8 @@ export default function TrustSection() {
               fontFamily: '"Inter", var(--font-sans), sans-serif',
             }}
           >
-            <span style={{ fontWeight: 300, color: '#9CA3AF' }}>{tr.trust.title_light}</span>
-            <span style={{ fontWeight: 800, color: '#111827' }}>{tr.trust.title_bold}</span>
+            <span style={{ fontWeight: 300, color: '#9CA3AF' }}>{trust.title_light}</span>
+            <span style={{ fontWeight: 800, color: '#111827' }}>{trust.title_bold}</span>
           </motion.h2>
 
           {/* Subtext */}
@@ -244,7 +247,7 @@ export default function TrustSection() {
               letterSpacing: '-0.01em',
             }}
           >
-            {tr.trust.subtitle}
+            {trust.subtitle}
           </motion.p>
         </div>
 

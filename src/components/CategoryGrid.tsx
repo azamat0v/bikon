@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { ArrowRight } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
 import { useRouter, type Page } from '../context/RouterContext';
+import { useHomePageCms } from '../lib/useProductPageCms';
 
 /* ── Config ──────────────────────────────────────────────────────────────── */
 /* ── Static assets — text injected from translations at render time ────────── */
@@ -194,7 +195,9 @@ function CategoryCard({
 export default function CategoryGrid() {
   const canHover = useHasHover();
   const { tr } = useLang();
-  const cats = tr.categories.items;
+  const cms = useHomePageCms();
+  const categories = { ...tr.categories, ...((cms?.categories as Partial<typeof tr.categories>) ?? {}) };
+  const cats = categories.items;
 
   return (
     <section
@@ -251,7 +254,7 @@ export default function CategoryGrid() {
                 display: 'inline-block', flexShrink: 0,
               }}
             />
-            {tr.categories.eyebrow}
+            {categories.eyebrow}
           </span>
 
           <h2
@@ -265,8 +268,8 @@ export default function CategoryGrid() {
               fontFamily: '"Inter", var(--font-sans), sans-serif',
             }}
           >
-            <span style={{ fontWeight: 300, color: '#9CA3AF' }}>{tr.categories.title_light}</span>
-            {tr.categories.title_bold}
+            <span style={{ fontWeight: 300, color: '#9CA3AF' }}>{categories.title_light}</span>
+            {categories.title_bold}
           </h2>
         </motion.div>
 
@@ -280,7 +283,7 @@ export default function CategoryGrid() {
               canHover={canHover}
               series={cats[i].series}
               title={cats[i].title}
-              learnMore={tr.categories.learn_more}
+              learnMore={categories.learn_more}
             />
           ))}
         </div>
@@ -294,7 +297,7 @@ export default function CategoryGrid() {
           className="text-center mt-10"
           style={{ fontSize: 12, color: '#BCBCBC', fontWeight: 500, letterSpacing: '0.02em' }}
         >
-          {tr.categories.footer_note}
+          {categories.footer_note}
         </motion.p>
       </div>
     </section>

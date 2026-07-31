@@ -219,3 +219,24 @@ export async function getAboutPage(locale: string): Promise<AboutPageCms | null>
     return null;
   }
 }
+
+/* ── Home Page CMS types ────────────────────────────────────────────────── */
+export interface HomePageCms {
+  hero: Record<string, unknown> | null;
+  categories: Record<string, unknown> | null;
+  trust: Record<string, unknown> | null;
+  buildpc: Record<string, unknown> | null;
+}
+
+/** Fetch CMS content for the Home page. Returns null if not published or on error. */
+export async function getHomePage(locale: string): Promise<HomePageCms | null> {
+  const params = new URLSearchParams({ locale });
+  try {
+    const res = await fetch(`${BASE}/api/home-page?${params}`);
+    if (!res.ok) return null;
+    const json = await res.json() as { data?: HomePageCms | null };
+    return json.data ?? null;
+  } catch {
+    return null;
+  }
+}

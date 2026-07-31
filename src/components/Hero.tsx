@@ -6,13 +6,15 @@ import {
 } from 'motion/react';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import { useLang } from '../context/LanguageContext';
+import { useHomePageCms } from '../lib/useProductPageCms';
 
 
 
 /* ─── Hero ───────────────────────────────────────────────────────────────── */
 export default function Hero() {
   const { tr } = useLang();
-  const h = tr.hero;
+  const cms = useHomePageCms();
+  const h = { ...tr.hero, ...((cms?.hero as Partial<typeof tr.hero>) ?? {}) };
   const imageRef = useRef<HTMLDivElement>(null);
 
   // Mouse-driven 3-D tilt tracked as raw motion values

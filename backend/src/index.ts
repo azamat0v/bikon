@@ -1731,6 +1731,196 @@ const ABOUT_FOUNDER_NAME_TITLE = {
   founder_title: 'Founder',
 };
 
+/* ── Home Page seed (Hero, Category Grid, Trust section, Build-Your-PC CTA) ── */
+const HOME_PAGE_SEED_EN = {
+  hero: {
+    eyebrow: 'National Brand',
+    title1: 'BIKON',
+    title2: 'Engineered for',
+    title3: 'the Future.',
+    subtitle: 'Quality devices crafted to world standards — engineered for performance, designed to inspire.',
+    cta_primary: 'Learn More',
+    cta_secondary: 'Explore Products',
+    badge1: '12 Months Warranty',
+    badge2: 'Free Shipping',
+    badge3: "Uzbekistan's #1",
+  },
+  categories: {
+    eyebrow: 'Products',
+    title_light: 'Explore ',
+    title_bold: 'Categories',
+    learn_more: 'Learn more',
+    footer_note: 'All products locally assembled in Uzbekistan · 12-Month Official Warranty',
+    items: [
+      { series: 'SMARTBOOK SERIES', title: 'Laptops' },
+      { series: 'MATRIX SERIES', title: 'All-in-Ones' },
+      { series: 'VISION PRO SERIES', title: 'Monitors' },
+      { series: 'BIKON CASES', title: 'Cases' },
+    ],
+  },
+  trust: {
+    eyebrow: 'Why Choose Us',
+    title_light: 'Why ',
+    title_bold: 'Bikon?',
+    subtitle: 'Quality and trust are our highest priority. Every device is backed by hard work and constant innovation.',
+    features: [
+      { title: 'Local Assembly & Service', desc: 'Quality hardware locally assembled and serviced in Uzbekistan for maximum reliability.' },
+      { title: 'Optimal Price & Quality', desc: 'The perfect balance of world-class specifications and competitive market pricing.' },
+      { title: '12-Month Warranty & National Support', desc: '12-month warranty backed by service centers across the entire republic.' },
+      { title: 'Stable Logistics & Fast Delivery', desc: 'Reliable supply chain and prompt delivery so your order arrives on time, every time.' },
+    ],
+  },
+  buildpc: {
+    badge: 'Custom Build',
+    title1: 'Build Your',
+    title2: 'Dream PC.',
+    body: 'Tell us your goals and budget — our specialists will pick the perfect components and assemble your PC right here in Uzbekistan.',
+    name_label: 'Your Name',
+    name_placeholder: 'Ali Valiyev',
+    phone_label: 'Phone Number',
+    phone_placeholder: '+998 90 000 00 00',
+    budget_label: 'Budget',
+    budget_placeholder: 'e.g. 5 000 000 UZS',
+    purpose_label: 'Purpose',
+    purpose_placeholder: 'Select purpose',
+    purposes: ['Gaming', 'Office / Work', 'Design & Video Editing', 'Programming', 'General Use'],
+    notes_label: 'Additional Notes',
+    notes_placeholder: 'Any specific requirements or preferences...',
+    submit: 'Send Request',
+    submitting: 'Sending...',
+    success_title: 'Request Received!',
+    success_desc: 'Our specialists will contact you shortly to discuss your perfect build.',
+    error: 'Something went wrong. Please try again or contact us directly.',
+    retry: 'Try Again',
+  },
+};
+
+const HOME_PAGE_SEED_RU = {
+  hero: {
+    eyebrow: 'Национальный Бренд',
+    title1: 'BIKON',
+    title2: 'Создан для',
+    title3: 'будущего.',
+    subtitle: 'Качественные устройства по мировым стандартам — для производительности и вдохновения.',
+    cta_primary: 'Узнать больше',
+    cta_secondary: 'Смотреть продукты',
+    badge1: 'Гарантия 12 месяцев',
+    badge2: 'Бесплатная доставка',
+    badge3: '№1 в Узбекистане',
+  },
+  categories: {
+    eyebrow: 'Продукты',
+    title_light: 'Исследуйте ',
+    title_bold: 'категории',
+    learn_more: 'Подробнее',
+    footer_note: 'Все устройства собраны в Узбекистане · Гарантия 12 месяцев',
+    items: [
+      { series: 'СЕРИЯ SMARTBOOK', title: 'Ноутбуки' },
+      { series: 'СЕРИЯ MATRIX', title: 'Моноблок' },
+      { series: 'СЕРИЯ VISION PRO', title: 'Мониторы' },
+      { series: 'BIKON CASES', title: 'Корпуса' },
+    ],
+  },
+  trust: {
+    eyebrow: 'Почему мы',
+    title_light: 'Почему ',
+    title_bold: 'Bikon?',
+    subtitle: 'Качество и доверие — наш главный приоритет. За каждым устройством — большой труд и инновации.',
+    features: [
+      { title: 'Локальная сборка и сервис', desc: 'Качественное оборудование, собранное и обслуживаемое локально в Узбекистане.' },
+      { title: 'Оптимальное соотношение цены и качества', desc: 'Идеальный баланс мировых характеристик и конкурентных цен.' },
+      { title: '12 месяцев гарантии и сервисные центры по всей республике', desc: '12-месячная гарантия и сеть сервисных центров по всей стране.' },
+      { title: 'Стабильная логистика и оперативные поставки', desc: 'Надёжная цепочка поставок и быстрая доставка — ваш заказ прибудет вовремя.' },
+    ],
+  },
+  buildpc: {
+    badge: 'Кастомная сборка',
+    title1: 'Собери свой',
+    title2: 'идеальный ПК.',
+    body: 'Расскажите нам о своих целях и бюджете — наши специалисты подберут компоненты и соберут ПК прямо здесь, в Узбекистане.',
+    name_label: 'Ваше имя',
+    name_placeholder: 'Иван Иванов',
+    phone_label: 'Номер телефона',
+    phone_placeholder: '+998 90 000 00 00',
+    budget_label: 'Бюджет',
+    budget_placeholder: 'например, 5 000 000 сум',
+    purpose_label: 'Цель использования',
+    purpose_placeholder: 'Выберите цель',
+    purposes: ['Игры', 'Офис / Работа', 'Дизайн и видеомонтаж', 'Программирование', 'Общее использование'],
+    notes_label: 'Дополнительно',
+    notes_placeholder: 'Любые особые пожелания или требования...',
+    submit: 'Отправить заявку',
+    submitting: 'Отправляем...',
+    success_title: 'Заявка принята!',
+    success_desc: 'Наши специалисты свяжутся с вами в ближайшее время для обсуждения вашей сборки.',
+    error: 'Что-то пошло не так. Попробуйте ещё раз или свяжитесь с нами напрямую.',
+    retry: 'Попробовать снова',
+  },
+};
+
+const HOME_PAGE_SEED_UZ = {
+  hero: {
+    eyebrow: 'Milliy Brend',
+    title1: 'BIKON',
+    title2: 'Kelajak uchun',
+    title3: 'yaratilgan.',
+    subtitle: "Dunyo standartlariga mos qurilmalar — unumdorlik va ilhom uchun mo'ljallangan.",
+    cta_primary: 'Batafsil',
+    cta_secondary: 'Mahsulotlar',
+    badge1: '12 oy kafolat',
+    badge2: 'Bepul yetkazish',
+    badge3: "O'zbekistonda #1",
+  },
+  categories: {
+    eyebrow: 'Mahsulotlar',
+    title_light: 'Kategoriyalarni ',
+    title_bold: "ko'ring",
+    learn_more: "Ko'proq",
+    footer_note: "Barcha mahsulotlar O'zbekistonda yig'ilgan · 12 oy rasmiy kafolat",
+    items: [
+      { series: 'SMARTBOOK SERIYASI', title: 'Noutbuklar' },
+      { series: 'MATRIX SERIYASI', title: 'Monoblok' },
+      { series: 'VISION PRO SERIYASI', title: 'Monitorlar' },
+      { series: 'BIKON CASES', title: 'Korpuslar' },
+    ],
+  },
+  trust: {
+    eyebrow: 'Nima uchun biz',
+    title_light: 'Nega ',
+    title_bold: 'Bikon?',
+    subtitle: 'Sifat va ishonch — bizning asosiy vazifamiz. Har bir qurilma ortida katta mehnat va innovatsiyalar yotadi.',
+    features: [
+      { title: "Lokal yig'uv va servis", desc: "O'zbekistonda mahalliy yig'ilgan va xizmat ko'rsatiladigan sifatli qurilmalar." },
+      { title: 'Narx va sifatning maqbul mutanosibligi', desc: "Dunyo miqyosidagi xususiyatlar va raqobatbardosh narxlarning mukammal muvozanati." },
+      { title: "12 oylik kafolat va butun respublika bo'ylab servis markazlari", desc: "12 oylik kafolat va respublika bo'ylab servis markazlari tarmog'i." },
+      { title: 'Barqaror logistika va tezkor yetkazib berish', desc: "Ishonchli ta'minot zanjiri va tez yetkazib berish — buyurtmangiz o'z vaqtida yetib keladi." },
+    ],
+  },
+  buildpc: {
+    badge: "Maxsus Yig'ish",
+    title1: "O'z kompyuteringizni",
+    title2: 'yarating.',
+    body: "Maqsad va byudjetingizni aytib bering — mutaxassislarimiz komponentlarni tanlab, O'zbekistonda kompyuteringizni yig'ib beradi.",
+    name_label: 'Ismingiz',
+    name_placeholder: 'Ali Valiyev',
+    phone_label: 'Telefon raqami',
+    phone_placeholder: '+998 90 000 00 00',
+    budget_label: 'Byudjet',
+    budget_placeholder: "masalan, 5 000 000 so'm",
+    purpose_label: 'Foydalanish maqsadi',
+    purpose_placeholder: 'Maqsadni tanlang',
+    purposes: ["O'yin", 'Ofis / Ish', 'Dizayn va video tahrirlash', 'Dasturlash', 'Umumiy foydalanish'],
+    notes_label: "Qo'shimcha",
+    notes_placeholder: 'Maxsus talablar yoki istaklaringiz...',
+    submit: "Ariza jo'natish",
+    submitting: "Jo'natilmoqda...",
+    success_title: 'Ariza qabul qilindi!',
+    success_desc: "Mutaxassislarimiz tez orada siz bilan bog'lanib, yig'ish haqida gaplashadi.",
+    error: "Xatolik yuz berdi. Qaytadan urinib ko'ring yoki biz bilan bog'laning.",
+    retry: 'Qayta urinish',
+  },
+};
+
 /* ── Seed functions ───────────────────────────────────────────────────── */
 async function seedProductPages(strapi: Core.Strapi) {
   const existing = await strapi.documents('api::product-page.product-page').findMany({ locale: 'en' });
@@ -1806,6 +1996,38 @@ async function seedAboutPageLocale(
     data: seed,
   });
   console.log(`[seed] about-page ${locale} created`);
+}
+
+async function seedHomePage(strapi: Core.Strapi) {
+  const existing = await strapi.documents('api::home-page.home-page').findFirst({ locale: 'en' });
+  if (existing) return;
+
+  await strapi.documents('api::home-page.home-page').create({
+    data: HOME_PAGE_SEED_EN as any,
+    locale: 'en',
+    status: 'published',
+  });
+  console.log('[seed] home-page created');
+}
+
+async function seedHomePageLocale(
+  strapi: Core.Strapi,
+  locale: 'ru' | 'uz',
+  seed: typeof HOME_PAGE_SEED_RU,
+) {
+  const existing = await strapi.documents('api::home-page.home-page').findFirst({ locale });
+  if (existing) return;
+
+  const en = await strapi.documents('api::home-page.home-page').findFirst({ locale: 'en' });
+  if (!en) return;
+
+  await (strapi.documents('api::home-page.home-page') as any).update({
+    documentId: (en as any).documentId,
+    locale,
+    status: 'published',
+    data: seed,
+  });
+  console.log(`[seed] home-page ${locale} created`);
 }
 
 async function seedSiteProducts(strapi: Core.Strapi) {
@@ -1926,6 +2148,8 @@ async function grantPublicPermissions(strapi: Core.Strapi) {
     'api::site-product.site-product.findOne',
     'api::article.article.find',
     'api::article.article.findOne',
+    'api::home-page.home-page.find',
+    'api::home-page.home-page.findOne',
   ];
 
   for (const action of actions) {
@@ -1961,6 +2185,7 @@ export default {
     await seedProductPages(strapi);
     await seedAboutPage(strapi);
     await seedSiteProducts(strapi);
+    await seedHomePage(strapi);
 
     await seedProductPageLocale(strapi, 'ru', SEED_PAGES_RU);
     await seedProductPageLocale(strapi, 'uz', SEED_PAGES_UZ);
@@ -1968,6 +2193,8 @@ export default {
     await seedAboutPageLocale(strapi, 'uz', ABOUT_SEED_UZ);
     await seedSiteProductLocale(strapi, 'ru', SITE_PRODUCTS_RU);
     await seedSiteProductLocale(strapi, 'uz', SITE_PRODUCTS_UZ);
+    await seedHomePageLocale(strapi, 'ru', HOME_PAGE_SEED_RU);
+    await seedHomePageLocale(strapi, 'uz', HOME_PAGE_SEED_UZ);
 
     await seedProductPageExtras(strapi);
     await seedAboutPageExtra(strapi);
